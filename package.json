@@ -2,7 +2,16 @@
   "name": "@japa/api-client",
   "version": "0.0.0",
   "description": "Browser and API testing client for Japa. Built on top of Playwright",
-  "main": "index.js",
+  "main": "build/index.js",
+  "files": [
+    "build/src",
+    "build/index.d.ts",
+    "build/index.js"
+  ],
+  "exports": {
+    ".": "./build/index.js"
+  },
+  "types": "./build/index.d.ts",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
@@ -63,11 +72,6 @@
     ],
     "runGhActionsOnWindows": true
   },
-  "files": [
-    "build/src",
-    "build/index.d.ts",
-    "build/index.js"
-  ],
   "eslintConfig": {
     "extends": [
       "plugin:adonis/typescriptPackage",
@@ -114,5 +118,16 @@
     "macroable": "^6.0.1",
     "set-cookie-parser": "^2.4.8",
     "superagent": "^7.1.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/japa/api-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/japa/api-client/issues"
+  },
+  "homepage": "https://github.com/japa/api-client#readme"
 }
