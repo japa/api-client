@@ -1,6 +1,6 @@
 {
   "name": "@japa/api-client",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Browser and API testing client for Japa. Built on top of Playwright",
   "main": "build/index.js",
   "files": [
@@ -130,7 +130,7 @@
     "url": "https://github.com/japa/api-client/issues"
   },
   "homepage": "https://github.com/japa/api-client#readme",
-   "publishConfig": {
+  "publishConfig": {
     "access": "public",
     "tag": "latest"
   }
