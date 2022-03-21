@@ -129,5 +129,9 @@
   "bugs": {
     "url": "https://github.com/japa/api-client/issues"
   },
-  "homepage": "https://github.com/japa/api-client#readme"
+  "homepage": "https://github.com/japa/api-client#readme",
+   "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  }
 }
