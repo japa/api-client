@@ -11,6 +11,7 @@ import { PluginFn } from '@japa/runner'
 import { ApiClient } from './src/Client'
 
 export * from './src/Contracts'
+export { ApiClient } from './src/Client'
 export { ApiRequest } from './src/Request'
 export { ApiResponse } from './src/Response'
 
