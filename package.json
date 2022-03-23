@@ -1,6 +1,6 @@
 {
   "name": "@japa/api-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Browser and API testing client for Japa. Built on top of Playwright",
   "main": "build/index.js",
   "files": [
