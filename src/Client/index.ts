@@ -22,7 +22,7 @@ export class ApiClient {
   /**
    * Hooks handlers to pass onto the request
    */
-  private hooksHandlers: {
+  private static hooksHandlers: {
     setup: SetupHandler[]
     teardown: TeardownHandler[]
   } = {
@@ -39,7 +39,7 @@ export class ApiClient {
   /**
    * Register setup hooks. Setup hooks are called before the request
    */
-  public setup(handler: SetupHandler): this {
+  public static setup(handler: SetupHandler) {
     this.hooksHandlers.setup.push(handler)
     return this
   }
@@ -47,7 +47,7 @@ export class ApiClient {
   /**
    * Register teardown hooks. Teardown hooks are called before the request
    */
-  public teardown(handler: TeardownHandler): this {
+  public static teardown(handler: TeardownHandler) {
     this.hooksHandlers.teardown.push(handler)
     return this
   }
@@ -59,7 +59,7 @@ export class ApiClient {
     return new ApiRequest(
       { baseUrl: this.baseUrl, method, endpoint },
       this.clientConfig || {},
-      this.hooksHandlers,
+      (this.constructor as typeof ApiClient).hooksHandlers,
       this.assert
     )
   }
