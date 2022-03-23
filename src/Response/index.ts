@@ -399,6 +399,6 @@ export class ApiResponse extends Macroable {
    */
   public assertUsingApiSpec() {
     this.ensureHasAssert()
-    this.assert!.isValidApiResponse(this.body())
+    this.assert!.isValidApiResponse(this.response)
   }
 }
