@@ -20,6 +20,7 @@ import {
 import cookie from 'cookie'
 import { Macroable } from 'macroable'
 import { Hooks } from '@poppinss/hooks'
+import type { Assert } from '@japa/assert'
 import { ApiResponse } from '../Response'
 import superagent, { Response } from 'superagent'
 import {
@@ -92,7 +93,8 @@ export class ApiRequest extends Macroable {
     hooksHandlers: {
       setup: SetupHandler[]
       teardown: TeardownHandler[]
-    }
+    },
+    private assert?: Assert
   ) {
     super()
     hooksHandlers.setup.forEach((handler) => this.setup(handler))
@@ -187,7 +189,7 @@ export class ApiRequest extends Macroable {
     }
 
     await this.setupRunner.cleanup(this)
-    return new ApiResponse(response, this.clientConfig)
+    return new ApiResponse(response, this.clientConfig, this.assert)
   }
 
   /**

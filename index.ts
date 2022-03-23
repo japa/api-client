@@ -20,10 +20,10 @@ export { ApiResponse } from './src/Response'
  */
 export function apiClient(config?: ClientConfig & { baseUrl?: string }): PluginFn {
   return function (_, __, { TestContext }) {
-    TestContext.getter(
+    TestContext.getter<InstanceType<typeof TestContext>>(
       'client',
       function () {
-        return new ApiClient(config || {})
+        return new ApiClient(config || {}, this.assert)
       },
       true
     )

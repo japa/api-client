@@ -8,6 +8,7 @@
  */
 
 import { ApiRequest } from '../Request'
+import type { Assert } from '@japa/assert'
 import { ClientConfig, SetupHandler, TeardownHandler } from '../Contracts'
 
 /**
@@ -29,7 +30,7 @@ export class ApiClient {
     teardown: [],
   }
 
-  constructor(config: ClientConfig & { baseUrl?: string }) {
+  constructor(config: ClientConfig & { baseUrl?: string }, private assert?: Assert) {
     const { baseUrl, ...clientConfig } = config
     this.baseUrl = baseUrl
     this.clientConfig = clientConfig
@@ -58,7 +59,8 @@ export class ApiClient {
     return new ApiRequest(
       { baseUrl: this.baseUrl, method, endpoint },
       this.clientConfig || {},
-      this.hooksHandlers
+      this.hooksHandlers,
+      this.assert
     )
   }
 

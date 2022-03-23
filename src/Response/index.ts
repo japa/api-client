@@ -9,8 +9,10 @@
 
 import { Response } from 'superagent'
 import { Macroable } from 'macroable'
+import { Assert } from '@japa/assert'
 import setCookieParser from 'set-cookie-parser'
-import { SuperAgentResponseFile, ClientConfig, ResponseCookies } from '../Contracts'
+
+import { SuperAgentResponseFile, ClientConfig, ResponseCookies, ResponseCookie } from '../Contracts'
 import {
   dumpResponse,
   dumpResponseBody,
@@ -30,9 +32,24 @@ export class ApiResponse extends Macroable {
    */
   public cookiesJar: ResponseCookies = this.parseCookies()
 
-  constructor(public response: Response, private clientConfig: ClientConfig) {
+  constructor(
+    public response: Response,
+    private clientConfig: ClientConfig,
+    private assert?: Assert
+  ) {
     super()
     this.processCookies()
+  }
+
+  /**
+   * Ensure assert plugin is installed
+   */
+  private ensureHasAssert() {
+    if (!this.assert) {
+      throw new Error(
+        'Response assertions are not available. Make sure to install the @japa/assert plugin'
+      )
+    }
   }
 
   /**
@@ -218,6 +235,13 @@ export class ApiResponse extends Macroable {
   }
 
   /**
+   * Get cookie by name
+   */
+  public cookie(name: string): ResponseCookie | undefined {
+    return this.cookiesJar[name]
+  }
+
+  /**
    * Parsed response cookies
    */
   public cookies() {
@@ -291,5 +315,88 @@ export class ApiResponse extends Macroable {
     this.dumpBody()
     this.dumpError()
     return this
+  }
+
+  /**
+   * Assert response status to match the expected status
+   */
+  public assertStatus(expectedStatus: number) {
+    this.ensureHasAssert()
+    this.assert!.equal(this.status(), expectedStatus)
+  }
+
+  /**
+   * Assert response body to match the expected body
+   */
+  public assertBody(expectedBody: any) {
+    this.ensureHasAssert()
+    this.assert!.deepEqual(this.body(), expectedBody)
+  }
+
+  /**
+   * Assert response body to match the subset from the
+   * expected body
+   */
+  public assertBodyContains(expectedBody: any) {
+    this.ensureHasAssert()
+    this.assert!.containsSubset(this.body(), expectedBody)
+  }
+
+  /**
+   * Assert response to contain a given cookie and optionally
+   * has the expected value
+   */
+  public assertCookie(name: string, value?: any) {
+    this.ensureHasAssert()
+    this.assert!.property(this.cookies(), name)
+
+    if (value !== undefined) {
+      this.assert!.deepEqual(this.cookie(name)!.value, value)
+    }
+  }
+
+  /**
+   * Assert response to not contain a given cookie
+   */
+  public assertCookieMissing(name: string) {
+    this.ensureHasAssert()
+    this.assert!.notProperty(this.cookies(), name)
+  }
+
+  /**
+   * Assert response to contain a given header and optionally
+   * has the expected value
+   */
+  public assertHeader(name: string, value?: any) {
+    this.ensureHasAssert()
+    this.assert!.property(this.headers(), name)
+
+    if (value !== undefined) {
+      this.assert!.deepEqual(this.header(name), value)
+    }
+  }
+
+  /**
+   * Assert response to not contain a given header
+   */
+  public assertHeaderMissing(name: string) {
+    this.ensureHasAssert()
+    this.assert!.notProperty(this.headers(), name)
+  }
+
+  /**
+   * Assert response text to include the expected value
+   */
+  public assertTextIncludes(expectedSubset: string) {
+    this.ensureHasAssert()
+    this.assert!.include(this.text(), expectedSubset)
+  }
+
+  /**
+   * Assert response body is valid as per the API spec.
+   */
+  public assertUsingApiSpec() {
+    this.ensureHasAssert()
+    this.assert!.isValidApiResponse(this.body())
   }
 }
