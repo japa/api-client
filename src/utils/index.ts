@@ -21,7 +21,7 @@ const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
  */
 export function stackToError(errorStack: any): string | Error {
   if (typeof errorStack === 'string' && /^\s*at .*(\S+:\d+|\(native\))/m.test(errorStack)) {
-    const customError = new Error()
+    const customError = new Error(errorStack.split('\n')[0])
     customError.stack = errorStack
     return customError
   }

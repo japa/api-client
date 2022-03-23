@@ -22,7 +22,13 @@ import { Macroable } from 'macroable'
 import { Hooks } from '@poppinss/hooks'
 import { ApiResponse } from '../Response'
 import superagent, { Response } from 'superagent'
-import { dumpRequest, dumpRequestBody, dumpRequestCookies, dumpRequestHeaders } from '../utils'
+import {
+  dumpRequest,
+  dumpRequestBody,
+  dumpRequestCookies,
+  dumpRequestHeaders,
+  stackToError,
+} from '../utils'
 
 const DUMP_CALLS = {
   request: dumpRequest,
@@ -168,6 +174,13 @@ export class ApiRequest extends Macroable {
       if (!error.response) {
         await this.setupRunner.cleanup(error, this)
         throw error
+      }
+
+      /**
+       * Raise exception when received 500 status code from the server
+       */
+      if (error.response.status >= 500) {
+        throw stackToError(error.response.text)
       }
 
       response = error.response

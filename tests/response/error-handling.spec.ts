@@ -41,7 +41,7 @@ test.group('Response | error handling', (group) => {
     assert.equal(response.status(), 401)
   })
 
-  test('dump fatal errors raised by the server', async ({ assert }) => {
+  test('raise fatal errors raised by the server', async ({ assert }) => {
     httpServer.onRequest((_, res) => {
       try {
         throw new Error('Something went wrong')
@@ -57,8 +57,6 @@ test.group('Response | error handling', (group) => {
       { setup: [], teardown: [] }
     )
 
-    const response = await request
-    response.dump()
-    assert.equal(response.status(), 500)
+    await assert.rejects(() => request, 'Error: Something went wrong')
   })
 })
