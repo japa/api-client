@@ -28,11 +28,11 @@ test.group('Request | body', (group) => {
       res.end(JSON.stringify(parse(body)))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.form({ username: 'virk', age: 22 })
 
     assert.equal(response.status(), 200)
@@ -50,11 +50,11 @@ test.group('Request | body', (group) => {
       res.end(body)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.json({ username: 'virk', age: 22 })
 
     assert.equal(response.status(), 200)
@@ -77,11 +77,11 @@ test.group('Request | body', (group) => {
       res.end()
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     await request.fields({ username: 'virk', age: 22 })
   })
 
@@ -99,11 +99,11 @@ test.group('Request | body', (group) => {
       res.end()
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     await request
       .fields({ username: 'virk', age: 22 })
       .file('package', join(__dirname, '../../package.json'))
@@ -123,11 +123,11 @@ test.group('Request | body', (group) => {
       res.end()
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     await request
       .fields({ username: 'virk', age: 22 })
       .file('package', join(__dirname, '../../package.json'), { filename: 'pkg.json' })

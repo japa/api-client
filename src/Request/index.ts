@@ -8,7 +8,6 @@
  */
 
 import {
-  ClientConfig,
   SetupHandler,
   RequestConfig,
   MultipartValue,
@@ -87,25 +86,17 @@ export class ApiRequest extends Macroable {
    */
   public cookiesJar: RequestCookies = {}
 
-  constructor(
-    public config: RequestConfig,
-    private clientConfig: ClientConfig,
-    hooksHandlers: {
-      setup: SetupHandler[]
-      teardown: TeardownHandler[]
-    },
-    private assert?: Assert
-  ) {
+  constructor(public config: RequestConfig, private assert?: Assert) {
     super()
-    hooksHandlers.setup.forEach((handler) => this.setup(handler))
-    hooksHandlers.teardown.forEach((handler) => this.teardown(handler))
+    this.config.hooks?.setup.forEach((handler) => this.setup(handler))
+    this.config.hooks?.teardown.forEach((handler) => this.teardown(handler))
   }
 
   /**
    * Set cookies header
    */
   private setCookiesHeader() {
-    const prepareMethod = this.clientConfig.serializers?.cookie?.prepare
+    const prepareMethod = this.config.serializers?.cookie?.prepare
 
     const cookies = Object.keys(this.cookiesJar).map((key) => {
       let { name, value } = this.cookiesJar[key]
@@ -189,7 +180,7 @@ export class ApiRequest extends Macroable {
     }
 
     await this.setupRunner.cleanup(this)
-    return new ApiResponse(response, this.clientConfig, this.assert)
+    return new ApiResponse(response, this.config, this.assert)
   }
 
   /**

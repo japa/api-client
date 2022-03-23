@@ -26,11 +26,11 @@ test.group('Request | query string', (group) => {
       res.end(JSON.stringify(parse(req.url!.split('?')[1])))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.qs('orderBy', 'id').qs('direction', 'desc')
 
     assert.equal(response.status(), 200)
@@ -47,11 +47,11 @@ test.group('Request | query string', (group) => {
       res.end(JSON.stringify(parse(req.url!.split('?')[1])))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.qs({ orderBy: 'id', direction: 'desc' })
 
     assert.equal(response.status(), 200)
@@ -68,11 +68,11 @@ test.group('Request | query string', (group) => {
       res.end(JSON.stringify(parse(req.url!.split('?')[1])))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.qs('orderBy=id&direction=desc')
 
     assert.equal(response.status(), 200)

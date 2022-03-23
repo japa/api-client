@@ -9,7 +9,6 @@
 
 import { PluginFn } from '@japa/runner'
 import { ApiClient } from './src/Client'
-import { ClientConfig } from './src/Contracts'
 
 export * from './src/Contracts'
 export { ApiRequest } from './src/Request'
@@ -18,12 +17,12 @@ export { ApiResponse } from './src/Response'
 /**
  * ApiClient plugin implementation
  */
-export function apiClient(config?: ClientConfig & { baseUrl?: string }): PluginFn {
+export function apiClient(baseUrl?: string): PluginFn {
   return function (_, __, { TestContext }) {
     TestContext.getter(
       'client',
       function () {
-        return new ApiClient(config || {}, this.assert)
+        return new ApiClient(baseUrl, this.assert)
       },
       true
     )

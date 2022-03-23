@@ -30,11 +30,11 @@ test.group('Request | headers', (group) => {
       )
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.header('X-Foo', 'bar').header('X-Baz', ['foo', 'bar'])
 
     assert.equal(response.status(), 200)
@@ -56,11 +56,11 @@ test.group('Request | headers', (group) => {
       )
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.headers({ 'X-Foo': 'bar', 'X-Baz': ['foo', 'bar'] })
 
     assert.equal(response.status(), 200)

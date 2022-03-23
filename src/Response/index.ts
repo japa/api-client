@@ -12,7 +12,13 @@ import { Macroable } from 'macroable'
 import { Assert } from '@japa/assert'
 import setCookieParser from 'set-cookie-parser'
 
-import { SuperAgentResponseFile, ClientConfig, ResponseCookies, ResponseCookie } from '../Contracts'
+import {
+  RequestConfig,
+  ResponseCookie,
+  ResponseCookies,
+  SuperAgentResponseFile,
+} from '../Contracts'
+
 import {
   dumpResponse,
   dumpResponseBody,
@@ -32,11 +38,7 @@ export class ApiResponse extends Macroable {
    */
   public cookiesJar: ResponseCookies = this.parseCookies()
 
-  constructor(
-    public response: Response,
-    private clientConfig: ClientConfig,
-    private assert?: Assert
-  ) {
+  constructor(public response: Response, private config: RequestConfig, private assert?: Assert) {
     super()
     this.processCookies()
   }
@@ -68,7 +70,7 @@ export class ApiResponse extends Macroable {
    * Process cookies using the serializer
    */
   private processCookies() {
-    const cookiesSerializer = this.clientConfig.serializers?.cookie
+    const cookiesSerializer = this.config.serializers?.cookie
     const processMethod = cookiesSerializer?.process
 
     if (!processMethod) {

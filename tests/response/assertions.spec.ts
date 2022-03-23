@@ -29,8 +29,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -49,8 +47,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -70,8 +66,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -95,8 +89,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -112,8 +104,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -133,8 +123,6 @@ test.group('Response | assertions', (group) => {
 
     const request = new ApiRequest(
       { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] },
       assert
     )
 
@@ -151,11 +139,7 @@ test.group('Response | assertions', (group) => {
       res.end(req.url)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     assert.throws(

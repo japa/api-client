@@ -34,11 +34,11 @@ test.group('Request | custom types', (group) => {
       return `<foo>${value.foo}</foo>`
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.form({ foo: 'bar' }).type('application/xyz')
 
     assert.equal(response.status(), 200)
@@ -59,11 +59,11 @@ test.group('Request | custom types', (group) => {
       throw new Error('Failed')
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     await assert.rejects(() => request.form({ foo: 'bar' }).type('application/xyz'), 'Failed')
   })
 
@@ -75,11 +75,11 @@ test.group('Request | custom types', (group) => {
       res.end(JSON.stringify({ value: body }))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     await assert.rejects(
       () => request.form({ foo: 'bar' }).type('application/xyz'),
       'The "string" argument must be of type string or an instance of Buffer or ArrayBuffer. Received an instance of Object'

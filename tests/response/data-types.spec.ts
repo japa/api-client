@@ -27,11 +27,7 @@ test.group('Response | data types', (group) => {
       res.end('<h1>hello world</h1>')
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -47,11 +43,7 @@ test.group('Response | data types', (group) => {
       res.end('hello world')
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -68,11 +60,7 @@ test.group('Response | data types', (group) => {
       res.end(JSON.stringify({ message: 'hello world' }))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -88,11 +76,7 @@ test.group('Response | data types', (group) => {
       res.end(JSON.stringify({ message: 'Unauthorized' }))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -108,11 +92,7 @@ test.group('Response | data types', (group) => {
       createReadStream(join(__dirname, '../../package.json')).pipe(res)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -129,11 +109,7 @@ test.group('Response | data types', (group) => {
       createReadStream(join(__dirname, '../../logo.png')).pipe(res)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -149,11 +125,7 @@ test.group('Response | data types', (group) => {
       res.end('<h1>hello world</h1>')
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -171,11 +143,7 @@ test.group('Response | data types', (group) => {
       res.end(body)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
       .fields({ username: 'virk', age: 22 })

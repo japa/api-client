@@ -25,11 +25,11 @@ test.group('Request | cookies', (group) => {
       res.end(JSON.stringify(cookie.parse(req.headers['cookie'])))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.cookie('name', 'virk').cookie('pass', 'secret')
 
     assert.equal(response.status(), 200)
@@ -46,20 +46,20 @@ test.group('Request | cookies', (group) => {
       res.end(JSON.stringify(cookie.parse(req.headers['cookie'])))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {
-        serializers: {
-          cookie: {
-            process() {},
-            prepare(_, value) {
-              return Buffer.from(value).toString('base64')
-            },
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+      serializers: {
+        cookie: {
+          process() {},
+          prepare(_, value) {
+            return Buffer.from(value).toString('base64')
           },
         },
       },
-      { setup: [], teardown: [] }
-    ).dump()
+    }).dump()
+
     const response = await request.cookie('name', 'virk').cookie('pass', 'secret')
 
     assert.equal(response.status(), 200)

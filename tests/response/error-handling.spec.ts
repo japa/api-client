@@ -29,11 +29,7 @@ test.group('Response | error handling', (group) => {
       }
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -51,11 +47,7 @@ test.group('Response | error handling', (group) => {
       }
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     await assert.rejects(() => request, 'Error: Something went wrong')
   })

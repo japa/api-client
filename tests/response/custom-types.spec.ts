@@ -38,11 +38,7 @@ test.group('Response | custom types', (group) => {
       response.on('error', (error) => cb(error, null))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -63,11 +59,7 @@ test.group('Response | custom types', (group) => {
       cb(new Error('Parsing failed'), response)
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     await assert.rejects(() => request, 'Parsing failed')
   })

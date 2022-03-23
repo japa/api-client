@@ -55,23 +55,26 @@ export type SuperAgentSerializer = (obj: any) => string
 export type MultipartValue = Blob | Buffer | ReadStream | string | boolean | number
 
 /**
- * Config accepted by the API request class
+ * Shape of custom cookies serializer.
  */
-export type RequestConfig = {
-  baseUrl?: string
-  method: string
-  endpoint: string
+export type CookiesSerializer = {
+  process(key: string, value: any, response: ApiResponse): any
+  prepare(key: string, value: any, request: ApiRequest): string
 }
 
 /**
- * API client configuration
+ * Config accepted by the API request class
  */
-export type ClientConfig = {
+export type RequestConfig = {
+  method: string
+  endpoint: string
+  baseUrl?: string
+  hooks?: {
+    setup: SetupHandler[]
+    teardown: TeardownHandler[]
+  }
   serializers?: {
-    cookie?: {
-      process(key: string, value: any, response: ApiResponse): any
-      prepare(key: string, value: any, request: ApiRequest): string
-    }
+    cookie?: CookiesSerializer
   }
 }
 

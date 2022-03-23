@@ -32,11 +32,11 @@ test.group('Request | auth', (group) => {
       res.end(JSON.stringify({ user, password }))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.basicAuth('virk', 'secret')
 
     assert.equal(response.status(), 200)
@@ -54,11 +54,11 @@ test.group('Request | auth', (group) => {
       res.end(JSON.stringify({ token }))
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
     const response = await request.bearerToken('foobar')
 
     assert.equal(response.status(), 200)

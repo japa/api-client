@@ -30,11 +30,7 @@ test.group('Response | redirects', (group) => {
       }
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request
     response.dump()
@@ -60,11 +56,7 @@ test.group('Response | redirects', (group) => {
       }
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request.redirects(1)
     response.dump()
@@ -90,11 +82,7 @@ test.group('Response | redirects', (group) => {
       }
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
 
     const response = await request.redirects(2)
     response.dump()

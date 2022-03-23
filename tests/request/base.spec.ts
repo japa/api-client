@@ -40,11 +40,7 @@ test.group('Request', (group) => {
         res.end('handled')
       })
 
-      const request = new ApiRequest(
-        { baseUrl: httpServer.baseUrl, method, endpoint: '/' },
-        {},
-        { setup: [], teardown: [] }
-      )
+      const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method, endpoint: '/' })
       const response = await request.dump()
 
       assert.equal(requestMethod!, method)
@@ -61,11 +57,7 @@ test.group('Request', (group) => {
       res.end(req.headers['accept'])
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    )
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
     const response = await request.accept('json')
     assert.equal(response.text(), 'application/json')
   })

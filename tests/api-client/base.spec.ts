@@ -41,7 +41,7 @@ test.group('API client | request', (group) => {
         res.end('handled')
       })
 
-      const request = new ApiClient({ baseUrl: httpServer.baseUrl })[method.toLowerCase()]('/')
+      const request = new ApiClient(httpServer.baseUrl)[method.toLowerCase()]('/')
       const response = await request
 
       assert.equal(requestMethod!, method)
@@ -65,7 +65,7 @@ test.group('API client | request', (group) => {
       return () => stack.push('setup cleanup')
     })
 
-    const request = new ApiClient({ baseUrl: httpServer.baseUrl }).get('/')
+    const request = new ApiClient(httpServer.baseUrl).get('/')
     await request
 
     assert.deepEqual(stack, ['setup', 'setup cleanup'])
@@ -90,7 +90,7 @@ test.group('API client | request', (group) => {
       return () => stack.push('teardown cleanup')
     })
 
-    const request = new ApiClient({ baseUrl: httpServer.baseUrl }).get('/')
+    const request = new ApiClient(httpServer.baseUrl).get('/')
     await request
 
     assert.deepEqual(stack, ['setup', 'setup cleanup', 'teardown', 'teardown cleanup'])

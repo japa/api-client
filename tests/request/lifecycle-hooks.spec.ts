@@ -25,11 +25,11 @@ test.group('Request | lifecycle hooks', (group) => {
       res.end()
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
 
     request.setup((req) => {
       assert.instanceOf(req, ApiRequest)
@@ -50,11 +50,11 @@ test.group('Request | lifecycle hooks', (group) => {
       res.end()
     })
 
-    const request = new ApiRequest(
-      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
-      {},
-      { setup: [], teardown: [] }
-    ).dump()
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
 
     request.setup((req) => {
       assert.instanceOf(req, ApiRequest)

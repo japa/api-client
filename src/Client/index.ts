@@ -9,16 +9,13 @@
 
 import { ApiRequest } from '../Request'
 import type { Assert } from '@japa/assert'
-import { ClientConfig, SetupHandler, TeardownHandler } from '../Contracts'
+import { SetupHandler, TeardownHandler, CookiesSerializer } from '../Contracts'
 
 /**
  * ApiClient exposes the API to make HTTP requests in context of
  * testing.
  */
 export class ApiClient {
-  private baseUrl?: string
-  private clientConfig?: ClientConfig
-
   /**
    * Hooks handlers to pass onto the request
    */
@@ -30,11 +27,9 @@ export class ApiClient {
     teardown: [],
   }
 
-  constructor(config: ClientConfig & { baseUrl?: string }, private assert?: Assert) {
-    const { baseUrl, ...clientConfig } = config
-    this.baseUrl = baseUrl
-    this.clientConfig = clientConfig
-  }
+  private static customCookiesSerializer?: CookiesSerializer
+
+  constructor(private baseUrl?: string, private assert?: Assert) {}
 
   /**
    * Register setup hooks. Setup hooks are called before the request
@@ -53,13 +48,28 @@ export class ApiClient {
   }
 
   /**
+   * Register a custom cookies serializer
+   */
+  public static cookiesSerializer(serailizer: CookiesSerializer) {
+    this.customCookiesSerializer = serailizer
+    return this
+  }
+
+  /**
    * Create an instance of the request
    */
   public request(endpoint: string, method: string) {
+    const hooks = (this.constructor as typeof ApiClient).hooksHandlers
+    const cookiesSerializer = (this.constructor as typeof ApiClient).customCookiesSerializer
+
     return new ApiRequest(
-      { baseUrl: this.baseUrl, method, endpoint },
-      this.clientConfig || {},
-      (this.constructor as typeof ApiClient).hooksHandlers,
+      {
+        baseUrl: this.baseUrl,
+        method,
+        endpoint,
+        hooks,
+        serializers: { cookie: cookiesSerializer },
+      },
       this.assert
     )
   }
