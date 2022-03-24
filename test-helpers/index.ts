@@ -10,7 +10,7 @@
 import { createServer, RequestListener, Server } from 'http'
 import { Readable } from 'stream'
 
-const PORT = 3333
+const PORT = 3000
 
 class HttpServer {
   public baseUrl = `http://localhost:${PORT}`

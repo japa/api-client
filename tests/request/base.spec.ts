@@ -13,6 +13,7 @@ import { ApiRequest } from '../../src/Request'
 import { RequestConfig } from '../../src/Contracts'
 
 import { httpServer } from '../../test-helpers'
+import { IncomingMessage } from 'http'
 
 test.group('Request', (group) => {
   group.each.setup(async () => {
@@ -60,5 +61,20 @@ test.group('Request', (group) => {
     const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
     const response = await request.accept('json')
     assert.equal(response.text(), 'application/json')
+  })
+
+  test('abort request after mentioned timeout', async ({ assert }) => {
+    let serverRequest: IncomingMessage
+    httpServer.onRequest(async (req) => {
+      serverRequest = req
+    })
+
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
+    await assert.rejects(() => request.accept('json').timeout(1000), 'Timeout of 1000ms exceeded')
+
+    /**
+     * Required to close the HTTP server
+     */
+    serverRequest!.socket.destroy()
   })
 })
