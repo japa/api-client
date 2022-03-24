@@ -32,6 +32,22 @@ export class ApiClient {
   constructor(private baseUrl?: string, private assert?: Assert) {}
 
   /**
+   * Remove all globally registered setup hooks
+   */
+  public static clearSetupHooks() {
+    this.hooksHandlers.setup = []
+    return this
+  }
+
+  /**
+   * Remove all globally registered teardown hooks
+   */
+  public static clearTeardownHooks() {
+    this.hooksHandlers.teardown = []
+    return this
+  }
+
+  /**
    * Register setup hooks. Setup hooks are called before the request
    */
   public static setup(handler: SetupHandler) {

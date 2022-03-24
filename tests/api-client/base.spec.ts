@@ -95,4 +95,51 @@ test.group('API client | request', (group) => {
 
     assert.deepEqual(stack, ['setup', 'setup cleanup', 'teardown', 'teardown cleanup'])
   })
+
+  test('clear setup hooks', async ({ assert }) => {
+    const stack: string[] = []
+
+    httpServer.onRequest((_, res) => {
+      res.end('handled')
+    })
+
+    ApiClient.setup(async (req) => {
+      assert.instanceOf(req, ApiRequest)
+      stack.push('setup')
+      return () => stack.push('setup cleanup')
+    })
+
+    ApiClient.clearSetupHooks()
+    const request = new ApiClient(httpServer.baseUrl).get('/')
+    await request
+
+    assert.deepEqual(stack, [])
+  })
+
+  test('clear teardown hooks', async ({ assert }) => {
+    const stack: string[] = []
+
+    httpServer.onRequest((_, res) => {
+      res.end('handled')
+    })
+
+    ApiClient.setup(async (req) => {
+      assert.instanceOf(req, ApiRequest)
+      stack.push('setup')
+      return () => stack.push('setup cleanup')
+    })
+
+    ApiClient.teardown((res) => {
+      assert.instanceOf(res, ApiResponse)
+      stack.push('teardown')
+      return () => stack.push('teardown cleanup')
+    })
+
+    ApiClient.clearTeardownHooks()
+
+    const request = new ApiClient(httpServer.baseUrl).get('/')
+    await request
+
+    assert.deepEqual(stack, ['setup', 'setup cleanup'])
+  })
 })
