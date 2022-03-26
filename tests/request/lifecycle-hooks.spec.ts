@@ -59,10 +59,41 @@ test.group('Request | lifecycle hooks', (group) => {
     request.setup((req) => {
       assert.instanceOf(req, ApiRequest)
       stack.push('setup')
-      return () => stack.push('setup cleanup')
+      return (error: any) => {
+        assert.isDefined(error)
+        assert.notInstanceOf(error, ApiRequest)
+        stack.push('setup cleanup')
+      }
     })
 
     await assert.rejects(async () => request.form({ name: 'virk' }).type('application/xyz'))
+    assert.deepEqual(stack, ['setup', 'setup cleanup'])
+  })
+
+  test('execute cleanup hooks when request passes', async ({ assert }) => {
+    const stack: string[] = []
+
+    httpServer.onRequest((_, res) => {
+      res.end()
+    })
+
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
+
+    request.setup((req) => {
+      assert.instanceOf(req, ApiRequest)
+      stack.push('setup')
+      return (error: any) => {
+        assert.isNull(error)
+        assert.notInstanceOf(error, ApiRequest)
+        stack.push('setup cleanup')
+      }
+    })
+
+    await request.form({ name: 'virk' })
     assert.deepEqual(stack, ['setup', 'setup cleanup'])
   })
 })

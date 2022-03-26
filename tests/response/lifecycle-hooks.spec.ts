@@ -41,7 +41,10 @@ test.group('Response | lifecycle hooks', (group) => {
     request.teardown((res) => {
       assert.instanceOf(res, ApiResponse)
       stack.push('teardown')
-      return () => stack.push('teardown cleanup')
+      return (error: any) => {
+        assert.isNull(error)
+        stack.push('teardown cleanup')
+      }
     })
 
     const response = await request

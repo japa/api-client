@@ -144,7 +144,7 @@ export class ApiRequest extends Macroable {
       throw error
     }
 
-    await this.teardownRunner.cleanup(response)
+    await this.teardownRunner.cleanup(null, response)
   }
 
   /**
@@ -179,7 +179,7 @@ export class ApiRequest extends Macroable {
       response = error.response
     }
 
-    await this.setupRunner.cleanup(this)
+    await this.setupRunner.cleanup(null, this)
     return new ApiResponse(this, response, this.config, this.assert)
   }
 
