@@ -173,6 +173,7 @@ export class ApiRequest extends Macroable {
        * Raise exception when received 500 status code from the server
        */
       if (error.response.status >= 500) {
+        await this.setupRunner.cleanup(error, this)
         throw stackToError(error.response.text)
       }
 
