@@ -180,7 +180,7 @@ export class ApiRequest extends Macroable {
     }
 
     await this.setupRunner.cleanup(this)
-    return new ApiResponse(response, this.config, this.assert)
+    return new ApiResponse(this, response, this.config, this.assert)
   }
 
   /**

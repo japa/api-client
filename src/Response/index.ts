@@ -10,6 +10,7 @@
 import { Response } from 'superagent'
 import { Macroable } from 'macroable'
 import { Assert } from '@japa/assert'
+import { ApiRequest } from '../Request'
 import setCookieParser from 'set-cookie-parser'
 
 import {
@@ -38,7 +39,12 @@ export class ApiResponse extends Macroable {
    */
   public cookiesJar: ResponseCookies = this.parseCookies()
 
-  constructor(public response: Response, private config: RequestConfig, private assert?: Assert) {
+  constructor(
+    public request: ApiRequest,
+    public response: Response,
+    private config: RequestConfig,
+    private assert?: Assert
+  ) {
     super()
     this.processCookies()
   }
