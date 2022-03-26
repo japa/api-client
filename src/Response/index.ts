@@ -43,21 +43,10 @@ export class ApiResponse extends Macroable {
     public request: ApiRequest,
     public response: Response,
     private config: RequestConfig,
-    private assert?: Assert
+    public assert?: Assert
   ) {
     super()
     this.processCookies()
-  }
-
-  /**
-   * Ensure assert plugin is installed
-   */
-  private ensureHasAssert() {
-    if (!this.assert) {
-      throw new Error(
-        'Response assertions are not available. Make sure to install the @japa/assert plugin'
-      )
-    }
   }
 
   /**
@@ -90,6 +79,17 @@ export class ApiResponse extends Macroable {
         cookie.value = processedValue
       }
     })
+  }
+
+  /**
+   * Ensure assert plugin is installed
+   */
+  public ensureHasAssert() {
+    if (!this.assert) {
+      throw new Error(
+        'Response assertions are not available. Make sure to install the @japa/assert plugin'
+      )
+    }
   }
 
   /**
