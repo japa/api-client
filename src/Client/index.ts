@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { Macroable } from 'macroable'
 import { ApiRequest } from '../Request'
 import type { Assert } from '@japa/assert'
 import { SetupHandler, TeardownHandler, CookiesSerializer } from '../Contracts'
@@ -15,7 +16,13 @@ import { SetupHandler, TeardownHandler, CookiesSerializer } from '../Contracts'
  * ApiClient exposes the API to make HTTP requests in context of
  * testing.
  */
-export class ApiClient {
+export class ApiClient extends Macroable {
+  /**
+   * Properties required by the Macroable class
+   */
+  public static macros = {}
+  public static getters = {}
+
   /**
    * Hooks handlers to pass onto the request
    */
@@ -29,7 +36,9 @@ export class ApiClient {
 
   private static customCookiesSerializer?: CookiesSerializer
 
-  constructor(private baseUrl?: string, private assert?: Assert) {}
+  constructor(private baseUrl?: string, private assert?: Assert) {
+    super()
+  }
 
   /**
    * Remove all globally registered setup hooks
