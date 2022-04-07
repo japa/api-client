@@ -87,9 +87,21 @@ export class ApiClient extends Macroable {
     const hooks = (this.constructor as typeof ApiClient).hooksHandlers
     const cookiesSerializer = (this.constructor as typeof ApiClient).customCookiesSerializer
 
+    let baseUrl = this.baseUrl
+    const envHost = process.env.HOST
+    const envPort = process.env.PORT
+
+    /**
+     * Compute baseUrl from the HOST and the PORT env variables
+     * when no baseUrl is provided
+     */
+    if (!baseUrl && envHost && envPort) {
+      baseUrl = `${envHost}:${envPort}`
+    }
+
     return new ApiRequest(
       {
-        baseUrl: this.baseUrl,
+        baseUrl,
         method,
         endpoint,
         hooks,

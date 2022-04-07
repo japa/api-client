@@ -142,4 +142,14 @@ test.group('API client | request', (group) => {
 
     assert.deepEqual(stack, ['setup', 'setup cleanup'])
   })
+
+  test('use HOST and PORT env variables when no baseUrl is provided', async ({ assert }) => {
+    httpServer.onRequest((_, res) => {
+      res.end('handled')
+    })
+
+    const request = new ApiClient().get('/')
+    const response = await request
+    assert.equal(response.text(), 'handled')
+  })
 })

@@ -10,10 +10,11 @@
 import { createServer, RequestListener, Server } from 'http'
 import { Readable } from 'stream'
 
-const PORT = 3000
+process.env.HOST = 'localhost'
+process.env.PORT = '3000'
 
 class HttpServer {
-  public baseUrl = `http://localhost:${PORT}`
+  public baseUrl = `http://${process.env.HOST}:${process.env.PORT}`
   public server?: Server
 
   public close() {
@@ -36,7 +37,7 @@ class HttpServer {
   public create() {
     return new Promise<void>((resolve) => {
       this.server = createServer()
-      this.server.listen(PORT, () => {
+      this.server.listen(process.env.PORT, () => {
         resolve()
       })
     })
