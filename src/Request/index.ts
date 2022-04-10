@@ -67,7 +67,7 @@ export class ApiRequest extends Macroable {
   /**
    * Reference to registered hooks
    */
-  private hooks = new Hooks()
+  public hooks = new Hooks()
   private setupRunner: ReturnType<Hooks['runner']>
   private teardownRunner: ReturnType<Hooks['runner']>
 
