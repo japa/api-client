@@ -24,6 +24,11 @@ export class ApiClient extends Macroable {
   public static getters = {}
 
   /**
+   * Invoked when a new instance of request is created
+   */
+  private static onRequestHandlers: ((request: ApiRequest) => void)[] = []
+
+  /**
    * Hooks handlers to pass onto the request
    */
   private static hooksHandlers: {
@@ -57,6 +62,24 @@ export class ApiClient extends Macroable {
   }
 
   /**
+   * Clear on request handlers registered using "onRequest"
+   * method
+   */
+  public static clearRequestHandlers() {
+    this.onRequestHandlers = []
+    return this
+  }
+
+  /**
+   * Register a handler to be invoked everytime a new request
+   * instance is created
+   */
+  public static onRequest(handler: (request: ApiRequest) => void) {
+    this.onRequestHandlers.push(handler)
+    return this
+  }
+
+  /**
    * Register setup hooks. Setup hooks are called before the request
    */
   public static setup(handler: SetupHandler) {
@@ -85,6 +108,7 @@ export class ApiClient extends Macroable {
    */
   public request(endpoint: string, method: string) {
     const hooks = (this.constructor as typeof ApiClient).hooksHandlers
+    const requestHandlers = (this.constructor as typeof ApiClient).onRequestHandlers
     const cookiesSerializer = (this.constructor as typeof ApiClient).customCookiesSerializer
 
     let baseUrl = this.baseUrl
@@ -99,7 +123,7 @@ export class ApiClient extends Macroable {
       baseUrl = `${envHost}:${envPort}`
     }
 
-    return new ApiRequest(
+    const request = new ApiRequest(
       {
         baseUrl,
         method,
@@ -109,6 +133,9 @@ export class ApiClient extends Macroable {
       },
       this.assert
     )
+
+    requestHandlers.forEach((handler) => handler(request))
+    return request
   }
 
   /**

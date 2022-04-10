@@ -21,6 +21,14 @@ test.group('API client | request', (group) => {
     return () => httpServer.close()
   })
 
+  group.each.setup(() => {
+    return () => {
+      ApiClient.clearRequestHandlers()
+      ApiClient.clearSetupHooks()
+      ApiClient.clearTeardownHooks()
+    }
+  })
+
   test('make { method } request using api client')
     .with<{ method: RequestConfig['method'] }[]>([
       { method: 'GET' },
@@ -151,5 +159,18 @@ test.group('API client | request', (group) => {
     const request = new ApiClient().get('/')
     const response = await request
     assert.equal(response.text(), 'handled')
+  })
+
+  test('invoke request setup handlers when a request is created', async ({ assert }) => {
+    assert.plan(1)
+    httpServer.onRequest((_, res) => {
+      res.end('handled')
+    })
+
+    ApiClient.onRequest((request) => {
+      assert.instanceOf(request, ApiRequest)
+    })
+
+    new ApiClient(httpServer.baseUrl).get('/')
   })
 })
