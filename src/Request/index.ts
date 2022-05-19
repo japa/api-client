@@ -540,6 +540,51 @@ export class ApiRequest extends Macroable {
   }
 
   /**
+   * Retry a failing request. Along with the count, you can also define
+   * a callback to decide how long the request should be retried.
+   *
+   * The max count is applied regardless of whether callback is defined
+   * or not
+   *
+   * The following response codes are considered failing.
+   * - 408
+   * - 413
+   * - 429
+   * - 500
+   * - 502
+   * - 503
+   * - 504
+   * - 521
+   * - 522
+   * - 524
+   *
+   * The following error codes are considered failing.
+   * - 'ETIMEDOUT'
+   * - 'ECONNRESET'
+   * - 'EADDRINUSE'
+   * - 'ECONNREFUSED'
+   * - 'EPIPE'
+   * - 'ENOTFOUND'
+   * - 'ENETUNREACH'
+   * - 'EAI_AGAIN'
+   */
+  public retry(
+    count: number,
+    retryUntilCallback?: (error: any, response: ApiResponse) => boolean
+  ): this {
+    if (retryUntilCallback) {
+      this.request.retry(count, (error, response) => {
+        return retryUntilCallback(error, new ApiResponse(this, response, this.config, this.assert))
+      })
+
+      return this
+    }
+
+    this.request.retry(count)
+    return this
+  }
+
+  /**
    * Make the API request
    */
   public async send() {

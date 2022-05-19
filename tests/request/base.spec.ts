@@ -14,6 +14,7 @@ import { RequestConfig } from '../../src/Contracts'
 
 import { httpServer } from '../../test-helpers'
 import { IncomingMessage } from 'http'
+import { ApiResponse } from '../../src/Response'
 
 test.group('Request', (group) => {
   group.each.setup(async () => {
@@ -76,5 +77,73 @@ test.group('Request', (group) => {
      * Required to close the HTTP server
      */
     serverRequest!.socket.destroy()
+  })
+
+  test('retry failing requests for the given number of count', async ({ assert }) => {
+    let retries = 0
+
+    httpServer.onRequest(async (_, res) => {
+      retries++
+      res.statusCode = 408
+      res.end()
+    })
+
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
+    await request.accept('json').retry(3)
+
+    assert.equal(retries, 4)
+  })
+
+  test('retry failing request until the callback returns false', async ({ assert }) => {
+    let retries = 0
+
+    httpServer.onRequest(async (_, res) => {
+      retries++
+      res.statusCode = 408
+      res.end()
+    })
+
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
+    await request.accept('json').retry(Infinity, () => {
+      return retries < 6
+    })
+
+    assert.equal(retries, 6)
+  })
+
+  test('respect max count even when callback returns true', async ({ assert }) => {
+    let retries = 0
+
+    httpServer.onRequest(async (_, res) => {
+      retries++
+      res.statusCode = 408
+      res.end()
+    })
+
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
+    await request.accept('json').retry(3, () => {
+      return retries < 6
+    })
+
+    assert.equal(retries, 4)
+  })
+
+  test('access response within the retry callback', async ({ assert }) => {
+    let retries = 0
+
+    httpServer.onRequest(async (_, res) => {
+      retries++
+      res.statusCode = 408
+      res.end()
+    })
+
+    const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
+    await request.accept('json').retry(3, (error, response) => {
+      assert.isNull(error)
+      assert.instanceOf(response, ApiResponse)
+      return retries < 6
+    })
+
+    assert.equal(retries, 4)
   })
 })
