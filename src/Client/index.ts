@@ -120,7 +120,7 @@ export class ApiClient extends Macroable {
      * when no baseUrl is provided
      */
     if (!baseUrl && envHost && envPort) {
-      baseUrl = `${envHost}:${envPort}`
+      baseUrl = `http://${envHost}:${envPort}`
     }
 
     const request = new ApiRequest(
