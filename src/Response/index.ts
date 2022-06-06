@@ -407,4 +407,22 @@ export class ApiResponse extends Macroable {
     this.ensureHasAssert()
     this.assert!.isValidApiResponse(this.response)
   }
+
+  /**
+   * Assert there is a matching redirect
+   */
+  public assertRedirectsTo(pathname: string) {
+    this.ensureHasAssert()
+    const redirects = this.redirects().map((url) => new URL(url).pathname)
+
+    this.assert!.evaluate(
+      redirects.find((one) => one === pathname),
+      `Expected #{exp} to be one of #{act}`,
+      {
+        expected: [pathname],
+        actual: redirects,
+        operator: 'includes',
+      }
+    )
+  }
 }

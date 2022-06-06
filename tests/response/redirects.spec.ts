@@ -94,4 +94,33 @@ test.group('Response | redirects', (group) => {
     ])
     assert.equal(response.text(), '/see-that-instead')
   })
+
+  test('assert redirects to match the given pathname', async ({ assert }) => {
+    httpServer.onRequest((req, res) => {
+      if (req.url === '/') {
+        res.statusCode = 301
+        res.setHeader('Location', '/see-this-instead')
+        res.end()
+      } else if (req.url === '/see-this-instead') {
+        res.statusCode = 301
+        res.setHeader('Location', '/see-that-instead')
+        res.end()
+      } else {
+        res.statusCode = 200
+        res.end(req.url)
+      }
+    })
+
+    const request = new ApiRequest(
+      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
+      assert
+    )
+
+    const response = await request.redirects(2)
+    response.dump()
+
+    assert.equal(response.status(), 200)
+    response.assertRedirectsTo('/see-this-instead')
+    response.assertRedirectsTo('/see-that-instead')
+  })
 })
