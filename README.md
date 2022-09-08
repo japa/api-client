@@ -14,7 +14,7 @@ It has out of the box support for:
 - All other common abilities like sending headers, query-string, and following redirects.
 - Support for registering custom body serializers and parsers.
 
-#### [Complete API documentation](https://japa.dev/plugins/api-client)
+#### [Complete API documentation](https://japa.dev/docs/plugins/api-client)
 
 ## Installation
 Install the package from the npm registry as follows:
