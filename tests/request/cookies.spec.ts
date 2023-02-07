@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,8 +9,9 @@
 
 import cookie from 'cookie'
 import { test } from '@japa/runner'
-import { ApiRequest } from '../../src/Request'
-import { httpServer } from '../../test-helpers'
+
+import { ApiRequest } from '../../src/request'
+import { httpServer } from '../../test_helpers'
 
 test.group('Request | cookies', (group) => {
   group.each.setup(async () => {
@@ -22,7 +23,7 @@ test.group('Request | cookies', (group) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      res.end(JSON.stringify(cookie.parse(req.headers['cookie'])))
+      res.end(JSON.stringify(cookie.parse(req.headers['cookie']!)))
     })
 
     const request = new ApiRequest({
@@ -43,7 +44,7 @@ test.group('Request | cookies', (group) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      res.end(JSON.stringify(cookie.parse(req.headers['cookie'])))
+      res.end(JSON.stringify(cookie.parse(req.headers['cookie']!)))
     })
 
     const request = new ApiRequest({

@@ -1,12 +1,19 @@
 /*
  * @japa/api-client
  *
- * (c) Japa
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
+import cookie from 'cookie'
+import { Macroable } from 'macroable'
+import { Hooks } from '@poppinss/hooks'
+import type { Assert } from '@japa/assert'
+import superagent, { Response } from 'superagent'
+
+import { ApiResponse } from './response'
 import {
   SetupHandler,
   RequestConfig,
@@ -15,20 +22,14 @@ import {
   TeardownHandler,
   SuperAgentParser,
   SuperAgentSerializer,
-} from '../Contracts'
-import cookie from 'cookie'
-import { Macroable } from 'macroable'
-import { Hooks } from '@poppinss/hooks'
-import type { Assert } from '@japa/assert'
-import { ApiResponse } from '../Response'
-import superagent, { Response } from 'superagent'
+} from './types'
 import {
   dumpRequest,
   dumpRequestBody,
   dumpRequestCookies,
   dumpRequestHeaders,
   stackToError,
-} from '../utils'
+} from './utils'
 
 const DUMP_CALLS = {
   request: dumpRequest,

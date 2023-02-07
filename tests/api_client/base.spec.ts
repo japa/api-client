@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c)
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,11 +9,11 @@
 
 import { test } from '@japa/runner'
 
-import { ApiClient } from '../../src/Client'
-import { ApiRequest } from '../../src/Request'
-import { httpServer } from '../../test-helpers'
-import { ApiResponse } from '../../src/Response'
-import { RequestConfig } from '../../src/Contracts'
+import { ApiClient } from '../../src/client'
+import { ApiRequest } from '../../src/request'
+import { httpServer } from '../../test_helpers'
+import { ApiResponse } from '../../src/response'
+import { RequestConfig } from '../../src/types'
 
 test.group('API client | request', (group) => {
   group.each.setup(async () => {

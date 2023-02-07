@@ -8,9 +8,10 @@
  */
 
 import { Macroable } from 'macroable'
-import { ApiRequest } from '../Request'
 import type { Assert } from '@japa/assert'
-import { SetupHandler, TeardownHandler, CookiesSerializer } from '../Contracts'
+
+import { ApiRequest } from './request'
+import { SetupHandler, TeardownHandler, CookiesSerializer } from './types'
 
 /**
  * ApiClient exposes the API to make HTTP requests in context of

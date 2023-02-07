@@ -1,20 +1,19 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 import { test } from '@japa/runner'
-
-import { ApiRequest } from '../../src/Request'
-import { RequestConfig } from '../../src/Contracts'
-
-import { httpServer } from '../../test-helpers'
 import { IncomingMessage } from 'http'
-import { ApiResponse } from '../../src/Response'
+
+import { ApiRequest } from '../../src/request'
+import { RequestConfig } from '../../src/types'
+import { ApiResponse } from '../../src/response'
+import { httpServer } from '../../test_helpers'
 
 test.group('Request', (group) => {
   group.each.setup(async () => {

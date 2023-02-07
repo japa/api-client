@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,23 +10,17 @@
 import { Response } from 'superagent'
 import { Macroable } from 'macroable'
 import { Assert } from '@japa/assert'
-import { ApiRequest } from '../Request'
 import setCookieParser from 'set-cookie-parser'
 
-import {
-  RequestConfig,
-  ResponseCookie,
-  ResponseCookies,
-  SuperAgentResponseFile,
-} from '../Contracts'
-
+import { ApiRequest } from './request'
+import { RequestConfig, ResponseCookie, ResponseCookies, SuperAgentResponseFile } from './types'
 import {
   dumpResponse,
   dumpResponseBody,
   dumpResponseError,
   dumpResponseCookies,
   dumpResponseHeaders,
-} from '../utils'
+} from './utils'
 
 export class ApiResponse extends Macroable {
   public static macros = {}

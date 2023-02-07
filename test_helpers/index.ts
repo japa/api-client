@@ -1,14 +1,14 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-import { createServer, RequestListener, Server } from 'http'
 import { Readable } from 'stream'
+import { createServer, RequestListener, Server } from 'http'
 
 process.env.HOST = 'localhost'
 process.env.PORT = '3000'

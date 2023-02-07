@@ -8,12 +8,12 @@
  */
 
 import { PluginFn } from '@japa/runner'
-import { ApiClient } from './src/Client'
+import { ApiClient } from './src/client'
 
-export * from './src/Contracts'
-export { ApiClient } from './src/Client'
-export { ApiRequest } from './src/Request'
-export { ApiResponse } from './src/Response'
+export { ApiClient }
+export * from './src/types'
+export { ApiRequest } from './src/request'
+export { ApiResponse } from './src/response'
 
 /**
  * ApiClient plugin implementation

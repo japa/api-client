@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,8 +10,8 @@
 import cookie from 'cookie'
 import { test } from '@japa/runner'
 
-import { ApiRequest } from '../../src/Request'
-import { httpServer } from '../../test-helpers'
+import { ApiRequest } from '../../src/request'
+import { httpServer } from '../../test_helpers'
 
 test.group('Response | cookies', (group) => {
   group.each.setup(async () => {

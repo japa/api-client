@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,8 +10,8 @@
 import { ReadStream } from 'fs'
 import { EventEmitter } from 'events'
 import { Response } from 'superagent'
-import { ApiRequest } from '../Request'
-import { ApiResponse } from '../Response'
+import { ApiRequest } from './request'
+import { ApiResponse } from './response'
 
 /**
  * The interface is copied from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/formidable/PersistentFile.d.ts, since superagent using formidable for parsing response
@@ -88,9 +88,9 @@ export type ResponseCookie = {
   domain?: string
   expires?: Date
   maxAge?: number
-  secure?: true
-  httpOnly?: true
-  sameSite?: 'lax' | 'none' | 'strict'
+  secure?: boolean
+  httpOnly?: boolean
+  sameSite?: string
 }
 
 /**

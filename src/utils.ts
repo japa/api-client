@@ -1,15 +1,15 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
 import { inspect } from 'util'
-import { ApiRequest } from '../Request'
-import { ApiResponse } from '../Response'
+import { ApiRequest } from './request'
+import { ApiResponse } from './response'
 
 const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
 

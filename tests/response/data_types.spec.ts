@@ -1,7 +1,7 @@
 /*
  * @japa/api-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Japa.dev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,8 +11,8 @@ import { join } from 'path'
 import { test } from '@japa/runner'
 import { createReadStream } from 'fs'
 
-import { ApiRequest } from '../../src/Request'
-import { awaitStream, httpServer } from '../../test-helpers'
+import { ApiRequest } from '../../src/request'
+import { awaitStream, httpServer } from '../../test_helpers'
 
 test.group('Response | data types', (group) => {
   group.each.setup(async () => {
