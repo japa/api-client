@@ -46,7 +46,7 @@ test('test title', ({ client }) => {
 ```
 
 [github-actions-url]: https://github.com/japa/api-client/actions/workflows/test.yml
-[github-actions-image]: https://img.shields.io/github/workflow/status/japa/api-client/test?style=for-the-badge "github-actions"
+[github-actions-image]: https://img.shields.io/github/actions/workflow/status/japa/api-client/test.yml?style=for-the-badge "github-actions"
 
 [npm-image]: https://img.shields.io/npm/v/@japa/api-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@japa/api-client "npm"
