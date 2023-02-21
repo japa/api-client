@@ -33,7 +33,7 @@ import { apiClient } from '@japa/api-client'
 import { configure } from '@japa/runner'
 
 configure({
-  plugins: [apiClient('http://localhost:3333')]
+  plugins: [apiClient({ baseURL: 'http://localhost:3333' })]
 })
 ```
 

@@ -16,14 +16,15 @@ export { ApiRequest } from './src/request'
 export { ApiResponse } from './src/response'
 
 /**
- * ApiClient plugin implementation
+ * API client plugin registers an HTTP request client that
+ * can be used for testing API endpoints.
  */
-export function apiClient(baseUrl?: string): PluginFn {
+export function apiClient(options?: string | { baseURL?: string }): PluginFn {
   return function (_, __, { TestContext }) {
     TestContext.getter(
       'client',
       function () {
-        return new ApiClient(baseUrl, this.assert)
+        return new ApiClient(typeof options === 'string' ? options : options?.baseURL, this.assert)
       },
       true
     )
