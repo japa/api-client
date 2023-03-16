@@ -103,11 +103,7 @@ test.group('Response | assertions', (group) => {
     httpServer.onRequest((_, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      res.end(
-        JSON.stringify([
-          { message: 'hello world', time: new Date() },
-        ])
-      )
+      res.end(JSON.stringify([{ message: 'hello world', time: new Date() }]))
     })
 
     const request = new ApiRequest(
