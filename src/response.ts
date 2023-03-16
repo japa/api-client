@@ -345,7 +345,7 @@ export class ApiResponse extends Macroable {
   }
 
   /**
-   * Assert response body to match the subset from the
+   * Assert response body not to match the subset from the
    * expected body
    */
   public assertBodyNotContains(expectedBody: any) {
