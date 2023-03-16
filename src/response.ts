@@ -345,6 +345,15 @@ export class ApiResponse extends Macroable {
   }
 
   /**
+   * Assert response body to match the subset from the
+   * expected body
+   */
+  public assertBodyNotContains(expectedBody: any) {
+    this.ensureHasAssert()
+    this.assert!.notContainsSubset(this.body(), expectedBody)
+  }
+
+  /**
    * Assert response to contain a given cookie and optionally
    * has the expected value
    */

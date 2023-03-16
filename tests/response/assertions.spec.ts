@@ -97,6 +97,28 @@ test.group('Response | assertions', (group) => {
     response.assertBodyContains([{ message: 'hello world' }, { message: 'hi world' }])
   })
 
+  test('assert response body not subset', async ({ assert }) => {
+    assert.plan(1)
+
+    httpServer.onRequest((_, res) => {
+      res.statusCode = 200
+      res.setHeader('content-type', 'application/json')
+      res.end(
+        JSON.stringify([
+          { message: 'hello world', time: new Date() },
+        ])
+      )
+    })
+
+    const request = new ApiRequest(
+      { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
+      assert
+    )
+
+    const response = await request
+    response.assertBodyNotContains([{ message: 'hi world' }])
+  })
+
   test('assert response body when response is not json', async ({ assert }) => {
     httpServer.onRequest((_, res) => {
       res.statusCode = 401
