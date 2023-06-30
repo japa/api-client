@@ -28,7 +28,7 @@ export class ApiResponse extends Macroable {
   /**
    * Parsed cookies
    */
-  cookiesJar: ResponseCookies = this.#parseCookies()
+  cookiesJar: ResponseCookies
 
   constructor(
     public request: ApiRequest,
@@ -37,6 +37,7 @@ export class ApiResponse extends Macroable {
     public assert?: Assert
   ) {
     super()
+    this.cookiesJar = this.#parseCookies()
     this.#processCookies()
   }
 
