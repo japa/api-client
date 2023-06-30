@@ -7,23 +7,23 @@
  * file that was distributed with this source code.
  */
 
-import { PluginFn } from '@japa/runner'
-import { ApiClient } from './src/client'
+import type { PluginFn } from '@japa/runner/types'
+import { ApiClient } from './src/client.js'
+import { TestContext } from '@japa/runner/core'
 
 export { ApiClient }
-export * from './src/types'
-export { ApiRequest } from './src/request'
-export { ApiResponse } from './src/response'
+export { ApiRequest } from './src/request.js'
+export { ApiResponse } from './src/response.js'
 
 /**
  * API client plugin registers an HTTP request client that
  * can be used for testing API endpoints.
  */
 export function apiClient(options?: string | { baseURL?: string }): PluginFn {
-  return function (_, __, { TestContext }) {
+  return function () {
     TestContext.getter(
       'client',
-      function () {
+      function (this: TestContext) {
         return new ApiClient(typeof options === 'string' ? options : options?.baseURL, this.assert)
       },
       true
@@ -31,7 +31,7 @@ export function apiClient(options?: string | { baseURL?: string }): PluginFn {
   }
 }
 
-declare module '@japa/runner' {
+declare module '@japa/runner/core' {
   interface TestContext {
     client: ApiClient
   }

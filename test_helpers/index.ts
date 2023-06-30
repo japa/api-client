@@ -7,17 +7,17 @@
  * file that was distributed with this source code.
  */
 
-import { Readable } from 'stream'
-import { createServer, RequestListener, Server } from 'http'
+import { Readable } from 'node:stream'
+import { createServer, RequestListener, Server } from 'node:http'
 
 process.env.HOST = 'localhost'
 process.env.PORT = '3000'
 
 class HttpServer {
-  public baseUrl = `http://${process.env.HOST}:${process.env.PORT}`
-  public server?: Server
+  baseUrl = `http://${process.env.HOST}:${process.env.PORT}`
+  server?: Server
 
-  public close() {
+  close() {
     return new Promise<void>((resolve, reject) => {
       if (!this.server) {
         return resolve()
@@ -34,7 +34,7 @@ class HttpServer {
     })
   }
 
-  public create() {
+  create() {
     return new Promise<void>((resolve) => {
       this.server = createServer()
       this.server.listen(process.env.PORT, () => {
@@ -43,7 +43,7 @@ class HttpServer {
     })
   }
 
-  public onRequest(listener: RequestListener) {
+  onRequest(listener: RequestListener) {
     this.server!.on('request', listener)
   }
 }

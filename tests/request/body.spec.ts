@@ -7,12 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { join } from 'path'
-import { parse } from 'querystring'
+import { dirname, join } from 'node:path'
+import { parse } from 'node:querystring'
 import { test } from '@japa/runner'
 
-import { ApiRequest } from '../../src/request'
-import { awaitStream, httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { awaitStream, httpServer } from '../../test_helpers/index.js'
+import { fileURLToPath } from 'node:url'
 
 test.group('Request | body', (group) => {
   group.each.setup(async () => {
@@ -106,7 +107,7 @@ test.group('Request | body', (group) => {
     }).dump()
     await request
       .fields({ username: 'virk', age: 22 })
-      .file('package', join(__dirname, '../../package.json'))
+      .file('package', join(dirname(fileURLToPath(import.meta.url)), '../../package.json'))
   })
 
   test('attach files with custom filename', async ({ assert }) => {
@@ -130,6 +131,8 @@ test.group('Request | body', (group) => {
     }).dump()
     await request
       .fields({ username: 'virk', age: 22 })
-      .file('package', join(__dirname, '../../package.json'), { filename: 'pkg.json' })
+      .file('package', join(dirname(fileURLToPath(import.meta.url)), '../../package.json'), {
+        filename: 'pkg.json',
+      })
   })
 })

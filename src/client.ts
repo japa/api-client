@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { Macroable } from 'macroable'
+import Macroable from '@poppinss/macroable'
 import type { Assert } from '@japa/assert'
 
-import { ApiRequest } from './request'
-import { SetupHandler, TeardownHandler, CookiesSerializer } from './types'
+import { ApiRequest } from './request.js'
+import { SetupHandler, TeardownHandler, CookiesSerializer } from './types.js'
 
 /**
  * ApiClient exposes the API to make HTTP requests in context of
@@ -19,20 +19,14 @@ import { SetupHandler, TeardownHandler, CookiesSerializer } from './types'
  */
 export class ApiClient extends Macroable {
   /**
-   * Properties required by the Macroable class
-   */
-  public static macros = {}
-  public static getters = {}
-
-  /**
    * Invoked when a new instance of request is created
    */
-  private static onRequestHandlers: ((request: ApiRequest) => void)[] = []
+  static #onRequestHandlers: ((request: ApiRequest) => void)[] = []
 
   /**
    * Hooks handlers to pass onto the request
    */
-  private static hooksHandlers: {
+  static #hooksHandlers: {
     setup: SetupHandler[]
     teardown: TeardownHandler[]
   } = {
@@ -40,25 +34,31 @@ export class ApiClient extends Macroable {
     teardown: [],
   }
 
-  private static customCookiesSerializer?: CookiesSerializer
+  static #customCookiesSerializer?: CookiesSerializer
 
-  constructor(private baseUrl?: string, private assert?: Assert) {
+  #baseUrl?: string
+  #assert?: Assert
+
+  constructor(baseUrl?: string, assert?: Assert) {
     super()
+
+    this.#baseUrl = baseUrl
+    this.#assert = assert
   }
 
   /**
    * Remove all globally registered setup hooks
    */
-  public static clearSetupHooks() {
-    this.hooksHandlers.setup = []
+  static clearSetupHooks() {
+    this.#hooksHandlers.setup = []
     return this
   }
 
   /**
    * Remove all globally registered teardown hooks
    */
-  public static clearTeardownHooks() {
-    this.hooksHandlers.teardown = []
+  static clearTeardownHooks() {
+    this.#hooksHandlers.teardown = []
     return this
   }
 
@@ -66,8 +66,8 @@ export class ApiClient extends Macroable {
    * Clear on request handlers registered using "onRequest"
    * method
    */
-  public static clearRequestHandlers() {
-    this.onRequestHandlers = []
+  static clearRequestHandlers() {
+    this.#onRequestHandlers = []
     return this
   }
 
@@ -75,44 +75,44 @@ export class ApiClient extends Macroable {
    * Register a handler to be invoked everytime a new request
    * instance is created
    */
-  public static onRequest(handler: (request: ApiRequest) => void) {
-    this.onRequestHandlers.push(handler)
+  static onRequest(handler: (request: ApiRequest) => void) {
+    this.#onRequestHandlers.push(handler)
     return this
   }
 
   /**
    * Register setup hooks. Setup hooks are called before the request
    */
-  public static setup(handler: SetupHandler) {
-    this.hooksHandlers.setup.push(handler)
+  static setup(handler: SetupHandler) {
+    this.#hooksHandlers.setup.push(handler)
     return this
   }
 
   /**
    * Register teardown hooks. Teardown hooks are called before the request
    */
-  public static teardown(handler: TeardownHandler) {
-    this.hooksHandlers.teardown.push(handler)
+  static teardown(handler: TeardownHandler) {
+    this.#hooksHandlers.teardown.push(handler)
     return this
   }
 
   /**
    * Register a custom cookies serializer
    */
-  public static cookiesSerializer(serailizer: CookiesSerializer) {
-    this.customCookiesSerializer = serailizer
+  static cookiesSerializer(serailizer: CookiesSerializer) {
+    this.#customCookiesSerializer = serailizer
     return this
   }
 
   /**
    * Create an instance of the request
    */
-  public request(endpoint: string, method: string) {
-    const hooks = (this.constructor as typeof ApiClient).hooksHandlers
-    const requestHandlers = (this.constructor as typeof ApiClient).onRequestHandlers
-    const cookiesSerializer = (this.constructor as typeof ApiClient).customCookiesSerializer
+  request(endpoint: string, method: string) {
+    const hooks = (this.constructor as typeof ApiClient).#hooksHandlers
+    const requestHandlers = (this.constructor as typeof ApiClient).#onRequestHandlers
+    const cookiesSerializer = (this.constructor as typeof ApiClient).#customCookiesSerializer
 
-    let baseUrl = this.baseUrl
+    let baseUrl = this.#baseUrl
     const envHost = process.env.HOST
     const envPort = process.env.PORT
 
@@ -132,7 +132,7 @@ export class ApiClient extends Macroable {
         hooks,
         serializers: { cookie: cookiesSerializer },
       },
-      this.assert
+      this.#assert
     )
 
     requestHandlers.forEach((handler) => handler(request))
@@ -142,49 +142,49 @@ export class ApiClient extends Macroable {
   /**
    * Create an instance of the request for GET method
    */
-  public get(endpoint: string) {
+  get(endpoint: string) {
     return this.request(endpoint, 'GET')
   }
 
   /**
    * Create an instance of the request for POST method
    */
-  public post(endpoint: string) {
+  post(endpoint: string) {
     return this.request(endpoint, 'POST')
   }
 
   /**
    * Create an instance of the request for PUT method
    */
-  public put(endpoint: string) {
+  put(endpoint: string) {
     return this.request(endpoint, 'PUT')
   }
 
   /**
    * Create an instance of the request for PATCH method
    */
-  public patch(endpoint: string) {
+  patch(endpoint: string) {
     return this.request(endpoint, 'PATCH')
   }
 
   /**
    * Create an instance of the request for DELETE method
    */
-  public delete(endpoint: string) {
+  delete(endpoint: string) {
     return this.request(endpoint, 'DELETE')
   }
 
   /**
    * Create an instance of the request for HEAD method
    */
-  public head(endpoint: string) {
+  head(endpoint: string) {
     return this.request(endpoint, 'HEAD')
   }
 
   /**
    * Create an instance of the request for OPTIONS method
    */
-  public options(endpoint: string) {
+  options(endpoint: string) {
     return this.request(endpoint, 'OPTIONS')
   }
 }

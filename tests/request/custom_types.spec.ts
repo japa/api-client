@@ -9,8 +9,8 @@
 
 import { test } from '@japa/runner'
 
-import { ApiRequest } from '../../src/request'
-import { awaitStream, httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { awaitStream, httpServer } from '../../test_helpers/index.js'
 
 test.group('Request | custom types', (group) => {
   group.each.setup(async () => {

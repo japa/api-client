@@ -9,11 +9,11 @@
 
 import { test } from '@japa/runner'
 
-import { ApiClient } from '../../src/client'
-import { ApiRequest } from '../../src/request'
-import { httpServer } from '../../test_helpers'
-import { ApiResponse } from '../../src/response'
-import { RequestConfig } from '../../src/types'
+import { ApiClient } from '../../src/client.js'
+import { ApiRequest } from '../../src/request.js'
+import { httpServer } from '../../test_helpers/index.js'
+import { ApiResponse } from '../../src/response.js'
+import { RequestConfig } from '../../src/types.js'
 
 test.group('API client | request', (group) => {
   group.each.setup(async () => {
@@ -49,6 +49,7 @@ test.group('API client | request', (group) => {
         res.end('handled')
       })
 
+      // @ts-ignore
       const request = new ApiClient(httpServer.baseUrl)[method.toLowerCase()]('/')
       const response = await request
 

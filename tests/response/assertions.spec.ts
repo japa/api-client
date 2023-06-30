@@ -10,8 +10,8 @@
 import cookie from 'cookie'
 import { test } from '@japa/runner'
 
-import { ApiRequest } from '../../src/request'
-import { httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { httpServer } from '../../test_helpers/index.js'
 
 test.group('Response | assertions', (group) => {
   group.each.setup(async () => {

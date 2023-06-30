@@ -7,12 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { join } from 'path'
+import { dirname, join } from 'node:path'
 import { test } from '@japa/runner'
-import { createReadStream } from 'fs'
+import { createReadStream } from 'node:fs'
 
-import { ApiRequest } from '../../src/request'
-import { awaitStream, httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { awaitStream, httpServer } from '../../test_helpers/index.js'
+import { fileURLToPath } from 'node:url'
 
 test.group('Response | data types', (group) => {
   group.each.setup(async () => {
@@ -89,7 +90,9 @@ test.group('Response | data types', (group) => {
     httpServer.onRequest((_, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      createReadStream(join(__dirname, '../../package.json')).pipe(res)
+      createReadStream(join(dirname(fileURLToPath(import.meta.url)), '../../package.json')).pipe(
+        res
+      )
     })
 
     const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
@@ -106,7 +109,7 @@ test.group('Response | data types', (group) => {
     httpServer.onRequest((_, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'image/png')
-      createReadStream(join(__dirname, '../../logo.png')).pipe(res)
+      createReadStream(join(dirname(fileURLToPath(import.meta.url)), '../../logo.png')).pipe(res)
     })
 
     const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
@@ -147,7 +150,7 @@ test.group('Response | data types', (group) => {
 
     const response = await request
       .fields({ username: 'virk', age: 22 })
-      .file('package', join(__dirname, '../../package.json'))
+      .file('package', join(dirname(fileURLToPath(import.meta.url)), '../../package.json'))
 
     response.dump()
     assert.property(response.files(), 'package')

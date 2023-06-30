@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { ReadStream } from 'fs'
-import { EventEmitter } from 'events'
+import { ReadStream } from 'node:fs'
+import { EventEmitter } from 'node:events'
 import { Response } from 'superagent'
-import { ApiRequest } from './request'
-import { ApiResponse } from './response'
+import { ApiRequest } from './request.js'
+import { ApiResponse } from './response.js'
 
 /**
  * The interface is copied from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/formidable/PersistentFile.d.ts, since superagent using formidable for parsing response
@@ -129,3 +129,11 @@ export type TeardownCleanupHandler = (
 export type TeardownHandler = (
   response: ApiResponse
 ) => any | TeardownCleanupHandler | Promise<any> | Promise<TeardownCleanupHandler>
+
+/**
+ * Hooks type
+ */
+export type ApiRequestHooks = {
+  setup: [Parameters<SetupHandler>, Parameters<SetupCleanupHandler>]
+  teardown: [Parameters<TeardownHandler>, Parameters<TeardownCleanupHandler>]
+}

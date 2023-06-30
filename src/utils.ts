@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { inspect } from 'util'
-import { ApiRequest } from './request'
-import { ApiResponse } from './response'
+import { inspect } from 'node:util'
+import { ApiRequest } from './request.js'
+import { ApiResponse } from './response.js'
 
 const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
 
@@ -60,6 +60,7 @@ export function dumpResponseCookies(response: ApiResponse) {
  * Default implementation to log request headers
  */
 export function dumpRequestHeaders(request: ApiRequest) {
+  // @ts-ignore
   console.log(`"headers"  => ${inspect(request.request['header'], INSPECT_OPTIONS)}`)
 }
 
@@ -74,8 +75,10 @@ export function dumpResponseHeaders(response: ApiResponse) {
  * Default implementation to log request body
  */
 export function dumpRequestBody(request: ApiRequest) {
-  if (request.request['_data']) {
-    console.log(`"body"     => ${inspect(request.request['_data'], INSPECT_OPTIONS)}`)
+  // @ts-ignore
+  const data = request.request['_data']
+  if (data) {
+    console.log(`"body"     => ${inspect(data, INSPECT_OPTIONS)}`)
   }
 }
 
@@ -97,7 +100,7 @@ export function dumpResponseBody(response: ApiResponse) {
     const files = Object.keys(response.files()).reduce((result, fileName) => {
       result[fileName] = response.files()[fileName].toJSON()
       return result
-    }, {})
+    }, {} as Record<string, any>)
     console.log(`"files"    => ${inspect(files, INSPECT_OPTIONS)}`)
   }
 }
@@ -115,6 +118,8 @@ export function dumpRequest(request: ApiRequest) {
       INSPECT_OPTIONS
     )}`
   )
+
+  // @ts-ignore
   console.log(`"qs"       => ${inspect(request.request['qs'], INSPECT_OPTIONS)}`)
 }
 

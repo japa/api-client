@@ -8,12 +8,12 @@
  */
 
 import { test } from '@japa/runner'
-import { IncomingMessage } from 'http'
+import { IncomingMessage } from 'node:http'
 
-import { ApiRequest } from '../../src/request'
-import { RequestConfig } from '../../src/types'
-import { ApiResponse } from '../../src/response'
-import { httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { RequestConfig } from '../../src/types.js'
+import { ApiResponse } from '../../src/response.js'
+import { httpServer } from '../../test_helpers/index.js'
 
 test.group('Request', (group) => {
   group.each.setup(async () => {
@@ -103,7 +103,7 @@ test.group('Request', (group) => {
     })
 
     const request = new ApiRequest({ baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' })
-    await request.accept('json').retry(Infinity, () => {
+    await request.accept('json').retry(Number.POSITIVE_INFINITY, () => {
       return retries < 6
     })
 

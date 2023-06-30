@@ -9,9 +9,9 @@
 
 import { test } from '@japa/runner'
 
-import { ApiRequest } from '../../src/request'
-import { ApiResponse } from '../../src/response'
-import { httpServer } from '../../test_helpers'
+import { ApiRequest } from '../../src/request.js'
+import { ApiResponse } from '../../src/response.js'
+import { httpServer } from '../../test_helpers/index.js'
 
 test.group('Response | lifecycle hooks', (group) => {
   group.each.setup(async () => {
