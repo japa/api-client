@@ -41,7 +41,7 @@
     "@japa/runner": "^3.0.0-1",
     "@swc/core": "^1.3.67",
     "@types/cookie": "^0.5.1",
-    "@types/node": "^18.14.0",
+    "@types/node": "^20.3.3",
     "@types/set-cookie-parser": "^2.4.2",
     "c8": "^8.0.0",
     "cheerio": "^1.0.0-rc.12",
@@ -56,9 +56,9 @@
   },
   "dependencies": {
     "@poppinss/hooks": "^7.1.1-4",
+    "@poppinss/macroable": "^1.0.0-7",
     "@types/superagent": "^4.1.16",
     "cookie": "^0.5.0",
-    "@poppinss/macroable": "^1.0.0-7",
     "set-cookie-parser": "^2.6.0",
     "superagent": "^8.0.9"
   },
