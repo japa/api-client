@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "quick:test": "node --loader ts-node/esm bin/test.ts",
-    "sync-labels": "github-label-sync --labels .github/labels.json japa/file-system"
+    "sync-labels": "github-label-sync --labels .github/labels.json japa/api-client"
   },
   "devDependencies": {
     "@adonisjs/eslint-config": "^1.1.8",
