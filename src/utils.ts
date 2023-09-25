@@ -97,10 +97,13 @@ export function dumpResponseBody(response: ApiResponse) {
   }
 
   if (response.hasFiles()) {
-    const files = Object.keys(response.files()).reduce((result, fileName) => {
-      result[fileName] = response.files()[fileName].toJSON()
-      return result
-    }, {} as Record<string, any>)
+    const files = Object.keys(response.files()).reduce(
+      (result, fileName) => {
+        result[fileName] = response.files()[fileName].toJSON()
+        return result
+      },
+      {} as Record<string, any>
+    )
     console.log(`"files"    => ${inspect(files, INSPECT_OPTIONS)}`)
   }
 }

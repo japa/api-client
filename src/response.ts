@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import { Assert } from '@japa/assert'
 import { Response } from 'superagent'
 import Macroable from '@poppinss/macroable'
-import { Assert } from '@japa/assert'
 import setCookieParser from 'set-cookie-parser'
 
 import { ApiRequest } from './request.js'

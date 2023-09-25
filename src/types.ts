@@ -8,8 +8,9 @@
  */
 
 import { ReadStream } from 'node:fs'
-import { EventEmitter } from 'node:events'
 import { Response } from 'superagent'
+import { EventEmitter } from 'node:events'
+
 import { ApiRequest } from './request.js'
 import { ApiResponse } from './response.js'
 

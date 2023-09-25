@@ -8,9 +8,9 @@
  */
 
 import cookie from 'cookie'
-import Macroable from '@poppinss/macroable'
 import Hooks from '@poppinss/hooks'
 import type { Assert } from '@japa/assert'
+import Macroable from '@poppinss/macroable'
 import superagent, { Response, SuperAgentRequest } from 'superagent'
 
 import { ApiResponse } from './response.js'
@@ -87,7 +87,10 @@ export class ApiRequest extends Macroable {
    */
   cookiesJar: RequestCookies = {}
 
-  constructor(public config: RequestConfig, assert?: Assert) {
+  constructor(
+    public config: RequestConfig,
+    assert?: Assert
+  ) {
     super()
     this.#assert = assert
     this.request = this.#createRequest()
