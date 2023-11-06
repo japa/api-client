@@ -11,7 +11,7 @@ import { test } from '@japa/runner'
 
 import { ApiClient } from '../../src/client.js'
 import { ApiRequest } from '../../src/request.js'
-import { httpServer } from '../../test_helpers/index.js'
+import { httpServer } from '../../tests_helpers/index.js'
 import { ApiResponse } from '../../src/response.js'
 import { RequestConfig } from '../../src/types.js'
 

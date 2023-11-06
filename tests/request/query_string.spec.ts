@@ -11,7 +11,7 @@ import { parse } from 'node:querystring'
 import { test } from '@japa/runner'
 
 import { ApiRequest } from '../../src/request.js'
-import { httpServer } from '../../test_helpers/index.js'
+import { httpServer } from '../../tests_helpers/index.js'
 
 test.group('Request | query string', (group) => {
   group.each.setup(async () => {

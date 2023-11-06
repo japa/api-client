@@ -13,7 +13,7 @@ import { IncomingMessage } from 'node:http'
 import { ApiRequest } from '../../src/request.js'
 import { RequestConfig } from '../../src/types.js'
 import { ApiResponse } from '../../src/response.js'
-import { httpServer } from '../../test_helpers/index.js'
+import { httpServer } from '../../tests_helpers/index.js'
 
 test.group('Request', (group) => {
   group.each.setup(async () => {

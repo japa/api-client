@@ -12,7 +12,7 @@ import { parse } from 'node:querystring'
 import { test } from '@japa/runner'
 
 import { ApiRequest } from '../../src/request.js'
-import { awaitStream, httpServer } from '../../test_helpers/index.js'
+import { awaitStream, httpServer } from '../../tests_helpers/index.js'
 import { fileURLToPath } from 'node:url'
 
 test.group('Request | body', (group) => {

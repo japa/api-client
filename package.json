@@ -8,9 +8,10 @@
   "main": "./build/index.js",
   "type": "module",
   "files": [
-    "build/src",
-    "build/index.d.ts",
-    "build/index.js"
+    "build",
+    "!build/bin",
+    "!build/tests_helpers",
+    "!build/tests"
   ],
   "exports": {
     ".": "./build/index.js",
@@ -20,9 +21,10 @@
     "pretest": "npm run lint && npm run typecheck",
     "test": "c8 npm run quick:test",
     "clean": "del-cli build",
-    "compile": "npm run lint && npm run clean && tsc",
+    "precompile": "npm run lint && npm run clean",
+    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
     "build": "npm run compile",
-    "release": "np --message=\"chore(release): %s\"",
+    "release": "np",
     "version": "npm run build",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
@@ -52,6 +54,7 @@
     "np": "^8.0.4",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -118,5 +121,17 @@
   },
   "directories": {
     "test": "tests"
+  },
+  "tsup": {
+    "entry": [
+      "./index.ts",
+      "./src/types.ts"
+    ],
+    "outDir": "./build",
+    "clean": true,
+    "format": "esm",
+    "dts": false,
+    "sourcemap": true,
+    "target": "esnext"
   }
 }
