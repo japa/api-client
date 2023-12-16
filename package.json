@@ -1,7 +1,7 @@
 {
   "name": "@japa/api-client",
   "description": "Browser and API testing client for Japa. Built on top of Playwright",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "engines": {
     "node": ">=18.16.0"
   },
