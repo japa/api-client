@@ -8,9 +8,9 @@
  */
 
 import { Assert } from '@japa/assert'
-import { Response } from 'superagent'
 import Macroable from '@poppinss/macroable'
 import setCookieParser from 'set-cookie-parser'
+import { type HTTPError, Response } from 'superagent'
 
 import { ApiRequest } from './request.js'
 import { RequestConfig, ResponseCookie, ResponseCookies, SuperAgentResponseFile } from './types.js'
@@ -230,7 +230,7 @@ export class ApiResponse extends Macroable {
   /**
    * Access to response error
    */
-  error() {
+  error(): false | HTTPError {
     return this.response.error
   }
 
