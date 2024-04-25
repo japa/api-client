@@ -63,7 +63,7 @@
     "@types/superagent": "^8.1.6",
     "cookie": "^0.6.0",
     "set-cookie-parser": "^2.6.0",
-    "superagent": "^8.1.2"
+    "superagent": "^9.0.1"
   },
   "peerDependencies": {
     "@japa/assert": "^2.0.0 || ^3.0.0",
