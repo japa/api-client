@@ -12,12 +12,78 @@ import { test } from '@japa/runner'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
+import { ApiResponse } from '../../src/response.js'
+
+type ExtractAllowed<Base, Condition> = Pick<
+  Base,
+  {
+    [Key in keyof Base]: Base[Key] extends Condition
+      ? Key extends `assert${string}`
+        ? Key
+        : never
+      : never
+  }[keyof Base]
+>
 
 test.group('Response | assertions', (group) => {
   group.each.setup(async () => {
     await httpServer.create()
     return () => httpServer.close()
   })
+
+  test('assert response status { status } shortcut from { method }')
+    .with<
+      {
+        method: NonNullable<keyof ExtractAllowed<ApiResponse, () => void>>
+        status: number
+      }[]
+    >([
+      { method: 'assertOk', status: 200 },
+      { method: 'assertCreated', status: 201 },
+      { method: 'assertAccepted', status: 202 },
+      { method: 'assertNoContent', status: 204 },
+      { method: 'assertMovedPermanently', status: 301 },
+      { method: 'assertFound', status: 302 },
+      { method: 'assertBadRequest', status: 400 },
+      { method: 'assertUnauthorized', status: 401 },
+      { method: 'assertPaymentRequired', status: 402 },
+      { method: 'assertForbidden', status: 403 },
+      { method: 'assertNotFound', status: 404 },
+      { method: 'assertMethodNotAllowed', status: 405 },
+      { method: 'assertNotAcceptable', status: 406 },
+      { method: 'assertRequestTimeout', status: 408 },
+      { method: 'assertConflict', status: 409 },
+      { method: 'assertGone', status: 410 },
+      { method: 'assertLengthRequired', status: 411 },
+      { method: 'assertPreconditionFailed', status: 412 },
+      { method: 'assertPayloadTooLarge', status: 413 },
+      { method: 'assertURITooLong', status: 414 },
+      { method: 'assertUnsupportedMediaType', status: 415 },
+      { method: 'assertRangeNotSatisfiable', status: 416 },
+      { method: 'assertImATeapot', status: 418 },
+      { method: 'assertUnprocessableEntity', status: 422 },
+      { method: 'assertLocked', status: 423 },
+      { method: 'assertTooManyRequests', status: 429 },
+    ])
+    .run(async ({ assert }, { method, status }) => {
+      assert.plan(1)
+
+      httpServer.onRequest((_, res) => {
+        res.statusCode = status
+        if (status > 300 && status < 303) {
+          res.setHeader('Location', '/see-this-instead')
+        }
+        res.end('handled')
+      })
+
+      const request = new ApiRequest(
+        { baseUrl: httpServer.baseUrl, method: 'GET', endpoint: '/' },
+        assert
+      )
+
+      const response = await request
+      response[method]()
+    })
 
   test('assert response status', async ({ assert }) => {
     assert.plan(1)
