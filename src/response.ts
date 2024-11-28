@@ -426,4 +426,186 @@ export class ApiResponse extends Macroable {
       }
     )
   }
+
+  /**
+   * Assert that response has an ok (200) status
+   */
+  assertOk() {
+    this.assertStatus(200)
+  }
+
+  /**
+   * Assert that response has a created (201) status
+   */
+  assertCreated() {
+    this.assertStatus(201)
+  }
+
+  /**
+   * Assert that response has an accepted (202) status
+   */
+  assertAccepted() {
+    this.assertStatus(202)
+  }
+
+  /**
+   * Assert that response has a no content (204) status
+   */
+  assertNoContent() {
+    this.assertStatus(204)
+  }
+
+  /**
+   * Assert that response has a moved permanently (301) status
+   */
+  assertMovedPermanently() {
+    this.assertStatus(301)
+  }
+
+  /**
+   * Assert that response has a found (302) status
+   */
+  assertFound() {
+    this.assertStatus(302)
+  }
+
+  /**
+   * Assert that response has a bad request (400) status
+   */
+  assertBadRequest() {
+    this.assertStatus(400)
+  }
+
+  /**
+   * Assert that response has an unauthorized (401) status
+   */
+  assertUnauthorized() {
+    this.assertStatus(401)
+  }
+
+  /**
+   * Assert that response has a payment required (402) status
+   */
+  assertPaymentRequired() {
+    this.assertStatus(402)
+  }
+
+  /**
+   * Assert that response has a forbidden (403) status
+   */
+  assertForbidden() {
+    this.assertStatus(403)
+  }
+
+  /**
+   * Assert that response has a not found (404) status
+   */
+  assertNotFound() {
+    this.assertStatus(404)
+  }
+
+  /**
+   * Assert that response has a method not allowed (405) status
+   */
+  assertMethodNotAllowed() {
+    this.assertStatus(405)
+  }
+
+  /**
+   * Assert that response has a not acceptable (406) status
+   */
+  assertNotAcceptable() {
+    this.assertStatus(406)
+  }
+
+  /**
+   * Assert that response has a request timeout (408) status
+   */
+  assertRequestTimeout() {
+    this.assertStatus(408)
+  }
+
+  /**
+   * Assert that response has a conflict (409) status
+   */
+  assertConflict() {
+    this.assertStatus(409)
+  }
+
+  /**
+   * Assert that response has a gone (410) status
+   */
+  assertGone() {
+    this.assertStatus(410)
+  }
+
+  /**
+   * Assert that response has a length required (411) status
+   */
+  assertLengthRequired() {
+    this.assertStatus(411)
+  }
+
+  /**
+   * Assert that response has a precondition failed (412) status
+   */
+  assertPreconditionFailed() {
+    this.assertStatus(412)
+  }
+
+  /**
+   * Assert that response has a payload too large (413) status
+   */
+  assertPayloadTooLarge() {
+    this.assertStatus(413)
+  }
+
+  /**
+   * Assert that response has a URI too long (414) status
+   */
+  assertURITooLong() {
+    this.assertStatus(414)
+  }
+
+  /**
+   * Assert that response has an unsupported media type (415) status
+   */
+  assertUnsupportedMediaType() {
+    this.assertStatus(415)
+  }
+
+  /**
+   * Assert that response has a range not satisfiable (416) status
+   */
+  assertRangeNotSatisfiable() {
+    this.assertStatus(416)
+  }
+
+  /**
+   * Assert that response has an im a teapot (418) status
+   */
+  assertImATeapot() {
+    this.assertStatus(418)
+  }
+
+  /**
+   * Assert that response has an unprocessable entity (422) status
+   */
+  assertUnprocessableEntity() {
+    this.assertStatus(422)
+  }
+
+  /**
+   * Assert that response has a locked (423) status
+   */
+  assertLocked() {
+    this.assertStatus(423)
+  }
+
+  /**
+   * Assert that response has a too many requests (429) status
+   */
+  assertTooManyRequests() {
+    this.assertStatus(429)
+  }
 }
