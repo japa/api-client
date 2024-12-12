@@ -24,13 +24,7 @@ import {
   SuperAgentSerializer,
   ApiRequestHooks,
 } from './types.js'
-import {
-  dumpRequest,
-  dumpRequestBody,
-  dumpRequestCookies,
-  dumpRequestHeaders,
-  stackToError,
-} from './utils.js'
+import { dumpRequest, dumpRequestBody, dumpRequestCookies, dumpRequestHeaders } from './utils.js'
 
 const DUMP_CALLS = {
   request: dumpRequest,
@@ -176,13 +170,9 @@ export class ApiRequest extends Macroable {
       }
 
       /**
-       * Raise exception when received 500 status code from the server
+       * For all HTTP errors (including 500+), return the error response
+       * This allows proper handling of server errors via ApiResponse
        */
-      if (error.response.status >= 500) {
-        await this.#setupRunner.cleanup(error, this)
-        throw stackToError(error.response.text)
-      }
-
       response = error.response
     }
 
