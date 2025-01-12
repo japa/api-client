@@ -62,7 +62,7 @@
     "set-cookie-parser": "^2.7.1"
   },
   "peerDependencies": {
-    "@japa/assert": "^2.0.0 || ^3.0.0",
+    "@japa/assert": "^2.0.0 || ^3.0.0 || ^4.0.0",
     "@japa/runner": "^3.1.2 || ^4.0.0",
     "@japa/openapi-assertions": "^0.1.1"
   },
