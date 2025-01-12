@@ -7,7 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import '@japa/openapi-assertions'
+/// <reference types="@japa/openapi-assertions" />
+
 import { Assert } from '@japa/assert'
 import Macroable from '@poppinss/macroable'
 import setCookieParser from 'set-cookie-parser'
