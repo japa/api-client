@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import '@japa/openapi-assertions'
 import { Assert } from '@japa/assert'
 import Macroable from '@poppinss/macroable'
 import setCookieParser from 'set-cookie-parser'
@@ -74,12 +75,25 @@ export class ApiResponse extends Macroable {
   }
 
   /**
-   * Ensure assert plugin is installed
+   * Ensure assert plugin is installed and configured
    */
-  ensureHasAssert() {
+  #ensureHasAssert() {
     if (!this.assert) {
       throw new Error(
         'Response assertions are not available. Make sure to install the @japa/assert plugin'
+      )
+    }
+  }
+
+  /**
+   * Ensure OpenAPI assertions package is installed and
+   * configured
+   */
+  #ensureHasOpenAPIAssertions() {
+    this.#ensureHasAssert()
+    if ('isValidApiResponse' in this.assert! === false) {
+      throw new Error(
+        'OpenAPI assertions are not available. Make sure to install the @japa/openapi-assertions plugin'
       )
     }
   }
@@ -321,7 +335,7 @@ export class ApiResponse extends Macroable {
    * Assert response status to match the expected status
    */
   assertStatus(expectedStatus: number) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.equal(this.status(), expectedStatus)
   }
 
@@ -329,7 +343,7 @@ export class ApiResponse extends Macroable {
    * Assert response body to match the expected body
    */
   assertBody(expectedBody: any) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.deepEqual(this.body(), expectedBody)
   }
 
@@ -338,7 +352,7 @@ export class ApiResponse extends Macroable {
    * expected body
    */
   assertBodyContains(expectedBody: any) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.containsSubset(this.body(), expectedBody)
   }
 
@@ -347,7 +361,7 @@ export class ApiResponse extends Macroable {
    * expected body
    */
   assertBodyNotContains(expectedBody: any) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.notContainsSubset(this.body(), expectedBody)
   }
 
@@ -356,7 +370,7 @@ export class ApiResponse extends Macroable {
    * has the expected value
    */
   assertCookie(name: string, value?: any) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.property(this.cookies(), name)
 
     if (value !== undefined) {
@@ -368,7 +382,7 @@ export class ApiResponse extends Macroable {
    * Assert response to not contain a given cookie
    */
   assertCookieMissing(name: string) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.notProperty(this.cookies(), name)
   }
 
@@ -377,7 +391,7 @@ export class ApiResponse extends Macroable {
    * has the expected value
    */
   assertHeader(name: string, value?: any) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.property(this.headers(), name)
 
     if (value !== undefined) {
@@ -389,7 +403,7 @@ export class ApiResponse extends Macroable {
    * Assert response to not contain a given header
    */
   assertHeaderMissing(name: string) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.notProperty(this.headers(), name)
   }
 
@@ -397,7 +411,7 @@ export class ApiResponse extends Macroable {
    * Assert response text to include the expected value
    */
   assertTextIncludes(expectedSubset: string) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     this.assert!.include(this.text(), expectedSubset)
   }
 
@@ -405,7 +419,7 @@ export class ApiResponse extends Macroable {
    * Assert response body is valid as per the API spec.
    */
   assertAgainstApiSpec() {
-    this.ensureHasAssert()
+    this.#ensureHasOpenAPIAssertions()
     this.assert!.isValidApiResponse(this.response)
   }
 
@@ -413,7 +427,7 @@ export class ApiResponse extends Macroable {
    * Assert there is a matching redirect
    */
   assertRedirectsTo(pathname: string) {
-    this.ensureHasAssert()
+    this.#ensureHasAssert()
     const redirects = this.redirects().map((url) => new URL(url).pathname)
 
     this.assert!.evaluate(
