@@ -35,7 +35,8 @@ const DUMP_CALLS = {
 
 export class ApiRequest extends Macroable {
   /**
-   * Register/remove custom superagent parser
+   * Register/remove custom superagent parser, Parsers are used
+   * to parse the incoming response
    */
   static addParser = (contentType: string, parser: SuperAgentParser) => {
     superagent.parse[contentType] = parser
@@ -45,7 +46,8 @@ export class ApiRequest extends Macroable {
   }
 
   /**
-   * Register/remove custom superagent serializers
+   * Register/remove custom superagent serializers. Serializers are used
+   * to serialize the request body
    */
   static addSerializer = (contentType: string, serializer: SuperAgentSerializer) => {
     superagent.serialize[contentType] = serializer
