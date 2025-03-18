@@ -154,6 +154,7 @@ export class ApiResponse extends Macroable {
    * Read value for a given response header
    */
   header(key: string): string | undefined {
+    key = key.toLowerCase()
     return this.response.headers[key]
   }
 
