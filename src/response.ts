@@ -393,6 +393,7 @@ export class ApiResponse extends Macroable {
    * has the expected value
    */
   assertHeader(name: string, value?: any) {
+    name = name.toLowerCase()
     this.#ensureHasAssert()
     this.assert!.property(this.headers(), name)
 
@@ -405,6 +406,7 @@ export class ApiResponse extends Macroable {
    * Assert response to not contain a given header
    */
   assertHeaderMissing(name: string) {
+    name = name.toLowerCase()
     this.#ensureHasAssert()
     this.assert!.notProperty(this.headers(), name)
   }

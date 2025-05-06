@@ -104,11 +104,12 @@ test.group('Response | assertions', (group) => {
   })
 
   test('assert response headers', async ({ assert }) => {
-    assert.plan(2)
+    assert.plan(5)
 
     httpServer.onRequest((_, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'text/plain')
+      res.setHeader('Access-Control-Allow-Origin', '*')
       res.end('hello world')
     })
 
@@ -119,6 +120,9 @@ test.group('Response | assertions', (group) => {
 
     const response = await request
     response.assertHeader('content-type')
+    response.assertHeader('Content-Type')
+    response.assertHeader('access-control-allow-origin')
+    response.assertHeader('Access-Control-Allow-Origin')
     response.assertHeaderMissing('authorization')
   })
 
