@@ -7,13 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { dirname, join } from 'node:path'
-import { parse } from 'node:querystring'
 import { test } from '@japa/runner'
+import { stringify, parse } from 'qs'
+import { fileURLToPath } from 'node:url'
+import { dirname, join } from 'node:path'
 
 import { ApiRequest } from '../../src/request.js'
 import { awaitStream, httpServer } from '../../tests_helpers/index.js'
-import { fileURLToPath } from 'node:url'
 
 test.group('Request | body', (group) => {
   group.each.setup(async () => {
@@ -40,6 +40,36 @@ test.group('Request | body', (group) => {
     assert.deepEqual(response.body(), {
       username: 'virk',
       age: '22',
+    })
+  })
+
+  test('send form with array values', async ({ assert, cleanup }) => {
+    httpServer.onRequest(async (req, res) => {
+      const body = await awaitStream(req)
+      res.statusCode = 200
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify(parse(body)))
+    })
+
+    ApiRequest.addSerializer('application/x-www-form-urlencoded', (value) => stringify(value))
+    cleanup(() => ApiRequest.removeParser('application/x-www-form-urlencoded'))
+
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
+    const response = await request.form({
+      'usernames': ['virk'],
+      'emails[]': 'virk@adonisjs.com',
+      'age': 22,
+    })
+
+    assert.equal(response.status(), 200)
+    assert.deepEqual(response.body(), {
+      usernames: ['virk'],
+      age: '22',
+      emails: ['virk@adonisjs.com'],
     })
   })
 

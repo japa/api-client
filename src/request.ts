@@ -14,7 +14,8 @@ import Macroable from '@poppinss/macroable'
 import superagent, { Response, SuperAgentRequest } from 'superagent'
 
 import { ApiResponse } from './response.js'
-import {
+import { dumpRequest, dumpRequestBody, dumpRequestCookies, dumpRequestHeaders } from './utils.js'
+import type {
   SetupHandler,
   RequestConfig,
   MultipartValue,
@@ -24,7 +25,6 @@ import {
   SuperAgentSerializer,
   ApiRequestHooks,
 } from './types.js'
-import { dumpRequest, dumpRequestBody, dumpRequestCookies, dumpRequestHeaders } from './utils.js'
 
 const DUMP_CALLS = {
   request: dumpRequest,
@@ -34,6 +34,11 @@ const DUMP_CALLS = {
 }
 
 export class ApiRequest extends Macroable {
+  /**
+   * The serializer to use for serializing request query params
+   */
+  static qsSerializer: SuperAgentSerializer = (value) => value
+
   /**
    * Register/remove custom superagent parser, Parsers are used
    * to parse the incoming response
@@ -54,6 +59,17 @@ export class ApiRequest extends Macroable {
   }
   static removeSerializer = (contentType: string) => {
     delete superagent.serialize[contentType]
+  }
+
+  /**
+   * Specify the serializer for query strings. Serializers are used to convert
+   * request querystring values to a string
+   */
+  static setQsSerializer = (serializer: SuperAgentSerializer) => {
+    ApiRequest.qsSerializer = serializer
+  }
+  static removeQsSerializer = () => {
+    ApiRequest.qsSerializer = (value) => value
   }
 
   /**
@@ -376,9 +392,9 @@ export class ApiRequest extends Macroable {
   qs(values: string | object): this
   qs(key: string | object, value?: any): this {
     if (!value) {
-      this.request.query(key)
+      this.request.query(typeof key === 'string' ? key : ApiRequest.qsSerializer(key))
     } else {
-      this.request.query({ [key as string]: value })
+      this.request.query(ApiRequest.qsSerializer({ [key as string]: value }))
     }
     return this
   }

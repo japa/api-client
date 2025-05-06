@@ -10,6 +10,7 @@
 import { inspect } from 'node:util'
 import { ApiRequest } from './request.js'
 import { ApiResponse } from './response.js'
+import { parse } from 'qs'
 
 const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
 
@@ -122,8 +123,9 @@ export function dumpRequest(request: ApiRequest) {
     )}`
   )
 
-  // @ts-ignore
-  console.log(`"qs"       => ${inspect(request.request['qs'], INSPECT_OPTIONS)}`)
+  if ('qsRaw' in request.request && Array.isArray(request.request.qsRaw)) {
+    console.log(`"qs"       => ${inspect(parse(request.request.qsRaw.join('&')), INSPECT_OPTIONS)}`)
+  }
 }
 
 /**

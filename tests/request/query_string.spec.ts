@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { parse } from 'node:querystring'
+import { parse, stringify } from 'qs'
 import { test } from '@japa/runner'
 
 import { ApiRequest } from '../../src/request.js'
@@ -79,6 +79,31 @@ test.group('Request | query string', (group) => {
     assert.deepEqual(response.body(), {
       orderBy: 'id',
       direction: 'desc',
+    })
+  })
+
+  test('specify array values in query string', async ({ assert, cleanup }) => {
+    httpServer.onRequest((req, res) => {
+      res.statusCode = 200
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify(parse(req.url!.split('?')[1])))
+    })
+
+    ApiRequest.setQsSerializer((value) => stringify(value))
+    cleanup(() => ApiRequest.removeQsSerializer())
+
+    const request = new ApiRequest({
+      baseUrl: httpServer.baseUrl,
+      method: 'GET',
+      endpoint: '/',
+    }).dump()
+
+    const response = await request.qs('ids', ['1']).qs('usernames[]', 'virk')
+
+    assert.equal(response.status(), 200)
+    assert.deepEqual(response.body(), {
+      ids: ['1'],
+      usernames: ['virk'],
     })
   })
 })
