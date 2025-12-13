@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { parse, stringify } from 'qs'
 import { test } from '@japa/runner'
+import { parse, stringify } from '@poppinss/qs'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'

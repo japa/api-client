@@ -8,9 +8,9 @@
  */
 
 import { test } from '@japa/runner'
-import { stringify, parse } from 'qs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { stringify, parse } from '@poppinss/qs'
 
 import { ApiRequest } from '../../src/request.js'
 import { awaitStream, httpServer } from '../../tests_helpers/index.js'

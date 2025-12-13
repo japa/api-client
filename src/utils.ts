@@ -10,7 +10,7 @@
 import { inspect } from 'node:util'
 import { type ApiRequest } from './request.js'
 import { type ApiResponse } from './response.js'
-import { parse } from 'qs'
+import { parse } from '@poppinss/qs'
 
 const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
 
