@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
 import { test } from '@japa/runner'
+import { parse } from 'cookie-es'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
@@ -23,7 +23,7 @@ test.group('Request | cookies', (group) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      res.end(JSON.stringify(cookie.parse(req.headers['cookie']!)))
+      res.end(JSON.stringify(parse(req.headers['cookie']!)))
     })
 
     const request = new ApiRequest({
@@ -44,7 +44,7 @@ test.group('Request | cookies', (group) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
       res.setHeader('content-type', 'application/json')
-      res.end(JSON.stringify(cookie.parse(req.headers['cookie']!)))
+      res.end(JSON.stringify(parse(req.headers['cookie']!)))
     })
 
     const request = new ApiRequest({

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
 import { test } from '@japa/runner'
+import { serialize } from 'cookie-es'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
@@ -22,7 +22,7 @@ test.group('Response | cookies', (group) => {
   test('parse response cookies', async ({ assert }) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
-      res.setHeader('set-cookie', cookie.serialize('foo', 'bar'))
+      res.setHeader('set-cookie', serialize('foo', 'bar'))
       res.end(req.url)
     })
 
@@ -37,7 +37,7 @@ test.group('Response | cookies', (group) => {
   test('parse multiple response cookies', async ({ assert }) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
-      res.setHeader('set-cookie', [cookie.serialize('foo', 'bar'), cookie.serialize('bar', 'baz')])
+      res.setHeader('set-cookie', [serialize('foo', 'bar'), serialize('bar', 'baz')])
       res.end(req.url)
     })
 
@@ -55,7 +55,7 @@ test.group('Response | cookies', (group) => {
   test('parse cookie attributes', async ({ assert }) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
-      res.setHeader('set-cookie', [cookie.serialize('foo', 'bar', { path: '/', maxAge: 3600 })])
+      res.setHeader('set-cookie', [serialize('foo', 'bar', { path: '/', maxAge: 3600 })])
       res.end(req.url)
     })
 
@@ -73,7 +73,7 @@ test.group('Response | cookies', (group) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
       res.setHeader('set-cookie', [
-        cookie.serialize('foo', Buffer.from('bar').toString('base64'), { path: '/', maxAge: 3600 }),
+        serialize('foo', Buffer.from('bar').toString('base64'), { path: '/', maxAge: 3600 }),
       ])
       res.end(req.url)
     })

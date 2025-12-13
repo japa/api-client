@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
 import { test } from '@japa/runner'
+import { serialize } from 'cookie-es'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
@@ -206,7 +206,7 @@ test.group('Response | assertions', (group) => {
   test('assert response cookies', async ({ assert }) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
-      res.setHeader('set-cookie', cookie.serialize('foo', 'bar'))
+      res.setHeader('set-cookie', serialize('foo', 'bar'))
       res.end(req.url)
     })
 
@@ -224,7 +224,7 @@ test.group('Response | assertions', (group) => {
   test('raise exception when assert plugin is not installed', async ({ assert }) => {
     httpServer.onRequest((req, res) => {
       res.statusCode = 200
-      res.setHeader('set-cookie', cookie.serialize('foo', 'bar'))
+      res.setHeader('set-cookie', serialize('foo', 'bar'))
       res.end(req.url)
     })
 

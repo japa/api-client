@@ -58,7 +58,7 @@
     "@poppinss/hooks": "^7.3.0",
     "@poppinss/macroable": "^1.1.0",
     "@types/superagent": "^8.1.9",
-    "cookie": "^1.1.1",
+    "cookie-es": "^2.0.0",
     "set-cookie-parser": "^2.7.2",
     "superagent": "^10.2.3"
   },

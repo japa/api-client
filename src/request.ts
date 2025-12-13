@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
 import Hooks from '@poppinss/hooks'
+import { serialize } from 'cookie-es'
 import type { Assert } from '@japa/assert'
 import Macroable from '@poppinss/macroable'
 import superagent, { type Response, type SuperAgentRequest } from 'superagent'
@@ -121,7 +121,7 @@ export class ApiRequest extends Macroable {
       if (prepareMethod) {
         value = prepareMethod(name, value, this)
       }
-      return cookie.serialize(name, value)
+      return serialize(name, value)
     })
 
     if (!cookies.length) {
