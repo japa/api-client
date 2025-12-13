@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Readable } from 'node:stream'
-import { createServer, RequestListener, Server } from 'node:http'
+import { type Readable } from 'node:stream'
+import { createServer, type RequestListener, type Server } from 'node:http'
 
 process.env.HOST = 'localhost'
 process.env.PORT = '3000'

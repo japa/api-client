@@ -12,7 +12,7 @@ import { test } from '@japa/runner'
 
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
-import { ApiResponse } from '../../src/response.js'
+import { type ApiResponse } from '../../src/response.js'
 
 type ExtractAllowed<Base, Condition> = Pick<
   Base,

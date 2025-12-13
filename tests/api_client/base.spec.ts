@@ -13,7 +13,7 @@ import { ApiClient } from '../../src/client.js'
 import { ApiRequest } from '../../src/request.js'
 import { httpServer } from '../../tests_helpers/index.js'
 import { ApiResponse } from '../../src/response.js'
-import { RequestConfig } from '../../src/types.js'
+import { type RequestConfig } from '../../src/types.js'
 
 test.group('API client | request', (group) => {
   group.each.setup(async () => {

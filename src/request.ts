@@ -11,7 +11,7 @@ import cookie from 'cookie'
 import Hooks from '@poppinss/hooks'
 import type { Assert } from '@japa/assert'
 import Macroable from '@poppinss/macroable'
-import superagent, { Response, SuperAgentRequest } from 'superagent'
+import superagent, { type Response, type SuperAgentRequest } from 'superagent'
 
 import { ApiResponse } from './response.js'
 import { dumpRequest, dumpRequestBody, dumpRequestCookies, dumpRequestHeaders } from './utils.js'

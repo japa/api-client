@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import { ReadStream } from 'node:fs'
-import { Response } from 'superagent'
-import { EventEmitter } from 'node:events'
+import { type ReadStream } from 'node:fs'
+import { type Response } from 'superagent'
+import { type EventEmitter } from 'node:events'
 
-import { ApiRequest } from './request.js'
-import { ApiResponse } from './response.js'
+import { type ApiRequest } from './request.js'
+import { type ApiResponse } from './response.js'
 
 /**
  * The interface is copied from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/formidable/PersistentFile.d.ts, since superagent using formidable for parsing response

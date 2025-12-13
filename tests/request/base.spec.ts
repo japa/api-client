@@ -8,10 +8,10 @@
  */
 
 import { test } from '@japa/runner'
-import { IncomingMessage } from 'node:http'
+import { type IncomingMessage } from 'node:http'
 
 import { ApiRequest } from '../../src/request.js'
-import { RequestConfig } from '../../src/types.js'
+import { type RequestConfig } from '../../src/types.js'
 import { ApiResponse } from '../../src/response.js'
 import { httpServer } from '../../tests_helpers/index.js'
 

@@ -9,13 +9,18 @@
 
 /// <reference types="@japa/openapi-assertions" />
 
-import { Assert } from '@japa/assert'
+import { type Assert } from '@japa/assert'
 import Macroable from '@poppinss/macroable'
 import setCookieParser from 'set-cookie-parser'
-import { type HTTPError, Response } from 'superagent'
+import { type HTTPError, type Response } from 'superagent'
 
-import { ApiRequest } from './request.js'
-import { RequestConfig, ResponseCookie, ResponseCookies, SuperAgentResponseFile } from './types.js'
+import { type ApiRequest } from './request.js'
+import {
+  type RequestConfig,
+  type ResponseCookie,
+  type ResponseCookies,
+  type SuperAgentResponseFile,
+} from './types.js'
 import {
   dumpResponse,
   dumpResponseBody,

@@ -8,8 +8,8 @@
  */
 
 import { inspect } from 'node:util'
-import { ApiRequest } from './request.js'
-import { ApiResponse } from './response.js'
+import { type ApiRequest } from './request.js'
+import { type ApiResponse } from './response.js'
 import { parse } from 'qs'
 
 const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }

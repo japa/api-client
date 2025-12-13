@@ -11,7 +11,7 @@ import Macroable from '@poppinss/macroable'
 import type { Assert } from '@japa/assert'
 
 import { ApiRequest } from './request.js'
-import { SetupHandler, TeardownHandler, CookiesSerializer } from './types.js'
+import { type SetupHandler, type TeardownHandler, type CookiesSerializer } from './types.js'
 
 /**
  * ApiClient exposes the API to make HTTP requests in context of
