@@ -29,7 +29,7 @@ import {
   dumpResponseHeaders,
 } from './utils.js'
 
-export class ApiResponse extends Macroable {
+export class ApiResponse<TResponse = any> extends Macroable {
   #valuesDumped: Set<string> = new Set()
 
   /**
@@ -151,7 +151,7 @@ export class ApiResponse extends Macroable {
   /**
    * Response body
    */
-  body(): any {
+  body(): TResponse {
     return this.response.body
   }
 
@@ -349,7 +349,7 @@ export class ApiResponse extends Macroable {
   /**
    * Assert response body to match the expected body
    */
-  assertBody(expectedBody: any) {
+  assertBody(expectedBody: TResponse) {
     this.#ensureHasAssert()
     this.assert!.deepEqual(this.body(), expectedBody)
   }

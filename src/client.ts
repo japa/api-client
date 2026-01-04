@@ -11,7 +11,22 @@ import Macroable from '@poppinss/macroable'
 import type { Assert } from '@japa/assert'
 
 import { ApiRequest } from './request.js'
-import { type SetupHandler, type TeardownHandler, type CookiesSerializer } from './types.js'
+import {
+  type SetupHandler,
+  type TeardownHandler,
+  type CookiesSerializer,
+  type InferBody,
+  type InferResponse,
+  type InferQuery,
+  type RoutesRegistry,
+  type PatternSerializer,
+  type UserRoutesRegistry,
+  type InferRouteBody,
+  type InferRouteQuery,
+  type InferRouteResponse,
+  type InferRouteParams,
+  type IsEmptyObject,
+} from './types.js'
 
 /**
  * ApiClient exposes the API to make HTTP requests in context of
@@ -35,6 +50,18 @@ export class ApiClient extends Macroable {
   }
 
   static #customCookiesSerializer?: CookiesSerializer
+
+  /**
+   * Routes registry for type-safe named routes
+   */
+  static #routesRegistry?: RoutesRegistry
+
+  /**
+   * Pattern serializer for converting patterns to URLs
+   */
+  static #patternSerializer: PatternSerializer = (pattern, params) => {
+    return pattern.replace(/:(\w+)/g, (_, key) => String(params[key] ?? ''))
+  }
 
   #baseUrl?: string
   #assert?: Assert
@@ -105,6 +132,30 @@ export class ApiClient extends Macroable {
   }
 
   /**
+   * Register a routes registry for type-safe named routes
+   */
+  static setRoutes(registry: RoutesRegistry) {
+    this.#routesRegistry = registry
+    return this
+  }
+
+  /**
+   * Register a custom pattern serializer
+   */
+  static setPatternSerializer(serializer: PatternSerializer) {
+    this.#patternSerializer = serializer
+    return this
+  }
+
+  /**
+   * Clear the routes registry
+   */
+  static clearRoutes() {
+    this.#routesRegistry = undefined
+    return this
+  }
+
+  /**
    * Create an instance of the request
    */
   request(endpoint: string, method: string) {
@@ -142,49 +193,101 @@ export class ApiClient extends Macroable {
   /**
    * Create an instance of the request for GET method
    */
-  get(endpoint: string) {
-    return this.request(endpoint, 'GET')
+  get<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'GET') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
   }
 
   /**
    * Create an instance of the request for POST method
    */
-  post(endpoint: string) {
-    return this.request(endpoint, 'POST')
+  post<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'POST') as ApiRequest<
+      InferBody<P>,
+      InferResponse<P>,
+      InferQuery<P>
+    >
   }
 
   /**
    * Create an instance of the request for PUT method
    */
-  put(endpoint: string) {
-    return this.request(endpoint, 'PUT')
+  put<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'PUT') as ApiRequest<
+      InferBody<P>,
+      InferResponse<P>,
+      InferQuery<P>
+    >
   }
 
   /**
    * Create an instance of the request for PATCH method
    */
-  patch(endpoint: string) {
-    return this.request(endpoint, 'PATCH')
+  patch<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'PATCH') as ApiRequest<
+      InferBody<P>,
+      InferResponse<P>,
+      InferQuery<P>
+    >
   }
 
   /**
    * Create an instance of the request for DELETE method
    */
-  delete(endpoint: string) {
-    return this.request(endpoint, 'DELETE')
+  delete<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'DELETE') as ApiRequest<
+      InferBody<P>,
+      InferResponse<P>,
+      InferQuery<P>
+    >
   }
 
   /**
    * Create an instance of the request for HEAD method
    */
-  head(endpoint: string) {
-    return this.request(endpoint, 'HEAD')
+  head<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'HEAD') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
   }
 
   /**
    * Create an instance of the request for OPTIONS method
    */
-  options(endpoint: string) {
-    return this.request(endpoint, 'OPTIONS')
+  options<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
+    return this.request(endpoint, 'OPTIONS') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
+  }
+
+  /**
+   * Create a type-safe request using a named route from the registry.
+   * The route name must be registered in both the runtime registry
+   * (via ApiClient.setRoutes()) and the type registry (UserRoutesRegistry).
+   */
+  visit<Name extends keyof UserRoutesRegistry>(
+    ...args: IsEmptyObject<InferRouteParams<Name>> extends true
+      ? [name: Name]
+      : [name: Name, params: InferRouteParams<Name>]
+  ): ApiRequest<InferRouteBody<Name>, InferRouteResponse<Name>, InferRouteQuery<Name>> {
+    const name = args[0]
+    const params = (args[1] ?? {}) as Record<string, any>
+
+    const registry = (this.constructor as typeof ApiClient).#routesRegistry
+    if (!registry) {
+      throw new Error(
+        `Routes registry not configured. Use ApiClient.routes() to register your routes.`
+      )
+    }
+
+    const routeDef = registry[name as string]
+    if (!routeDef) {
+      throw new Error(`Route "${String(name)}" not found in routes registry.`)
+    }
+
+    const serializer = (this.constructor as typeof ApiClient).#patternSerializer
+    const endpoint = serializer(routeDef.pattern, params)
+    const method = routeDef.methods[0]
+
+    return this.request(endpoint, method) as ApiRequest<
+      InferRouteBody<Name>,
+      InferRouteResponse<Name>,
+      InferRouteQuery<Name>
+    >
   }
 }

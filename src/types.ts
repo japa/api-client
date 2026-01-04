@@ -138,3 +138,131 @@ export type ApiRequestHooks = {
   setup: [Parameters<SetupHandler>, Parameters<SetupCleanupHandler>]
   teardown: [Parameters<TeardownHandler>, Parameters<TeardownCleanupHandler>]
 }
+
+/**
+ * User-augmentable routes registry for type-safe API client.
+ * Augment this interface to enable type-safe endpoints.
+ *
+ * @example
+ * declare module '@japa/api-client' {
+ *   interface UserRoutesRegistry {
+ *     'users.show': {
+ *       methods: ['GET', 'HEAD']
+ *       pattern: '/users/:id'
+ *       types: {
+ *         params: { id: string }
+ *         query: {}
+ *         body: {}
+ *         response: { user: { id: string; name: string } }
+ *       }
+ *     }
+ *   }
+ * }
+ */
+export interface UserRoutesRegistry {}
+
+/**
+ * Shape of a route definition in the registry
+ */
+export interface RouteDefinition {
+  methods: readonly string[]
+  pattern: string
+  types: {
+    params: Record<string, any>
+    query: Record<string, any>
+    body: Record<string, any>
+    response: any
+  }
+}
+
+/**
+ * Runtime routes registry passed to the plugin
+ */
+export type RoutesRegistry = Record<string, { methods: readonly string[]; pattern: string }>
+
+/**
+ * Pattern serializer function type
+ */
+export type PatternSerializer = (pattern: string, params: Record<string, any>) => string
+
+/**
+ * Check if an object type is empty (has no keys)
+ */
+export type IsEmptyObject<T> = keyof T extends never ? true : false
+
+/**
+ * Check if user has augmented the registry
+ */
+type HasUserRegistry = keyof UserRoutesRegistry extends never ? false : true
+
+/**
+ * Find a route definition by its pattern
+ */
+type FindRouteByPattern<P extends string> = {
+  [K in keyof UserRoutesRegistry]: UserRoutesRegistry[K] extends { pattern: P }
+    ? UserRoutesRegistry[K]
+    : never
+}[keyof UserRoutesRegistry]
+
+/**
+ * Extract all patterns from the registry
+ */
+type AllPatterns = UserRoutesRegistry[keyof UserRoutesRegistry] extends { pattern: infer P }
+  ? P extends string
+    ? P
+    : never
+  : never
+
+/**
+ * Helper to extract a type from a named route
+ */
+type InferFromRoute<
+  Name extends keyof UserRoutesRegistry,
+  Key extends 'params' | 'query' | 'body' | 'response',
+> = UserRoutesRegistry[Name] extends { types: infer Types }
+  ? Key extends keyof Types
+    ? Types[Key]
+    : never
+  : never
+
+/**
+ * Helper to extract a type from a route pattern
+ */
+type InferFromPattern<
+  P extends string,
+  Key extends 'body' | 'query' | 'response',
+> = HasUserRegistry extends true
+  ? [FindRouteByPattern<P>] extends [never]
+    ? any
+    : FindRouteByPattern<P> extends { types: infer Types }
+      ? Key extends keyof Types
+        ? Types[Key]
+        : any
+      : any
+  : any
+
+export type InferRouteParams<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'params'>
+export type InferRouteQuery<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'query'>
+export type InferRouteBody<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'body'>
+export type InferRouteResponse<Name extends keyof UserRoutesRegistry> = InferFromRoute<
+  Name,
+  'response'
+>
+
+export type InferBody<P extends string> = InferFromPattern<P, 'body'>
+export type InferResponse<P extends string> = InferFromPattern<P, 'response'>
+export type InferQuery<P extends string> = InferFromPattern<P, 'query'>
+
+/**
+ * Valid patterns (restricted to known patterns if registry is configured)
+ */
+export type ValidPattern = HasUserRegistry extends true ? AllPatterns : string
+
+/**
+ * Options for the apiClient plugin
+ */
+export interface ApiClientPluginOptions {
+  baseURL?: string
+  registry?: RoutesRegistry
+  patternSerializer?: PatternSerializer
+}

@@ -10,6 +10,7 @@
 import type { PluginFn } from '@japa/runner/types'
 import { ApiClient } from './src/client.js'
 import { TestContext } from '@japa/runner/core'
+import type { ApiClientPluginOptions } from './src/types.js'
 
 export { ApiClient }
 export { ApiRequest } from './src/request.js'
@@ -19,12 +20,22 @@ export { ApiResponse } from './src/response.js'
  * API client plugin registers an HTTP request client that
  * can be used for testing API endpoints.
  */
-export function apiClient(options?: string | { baseURL?: string }): PluginFn {
+export function apiClient(options?: string | ApiClientPluginOptions): PluginFn {
   return function () {
+    const normalizedOptions = typeof options === 'string' ? { baseURL: options } : options
+
+    if (normalizedOptions?.registry) {
+      ApiClient.setRoutes(normalizedOptions.registry)
+    }
+
+    if (normalizedOptions?.patternSerializer) {
+      ApiClient.setPatternSerializer(normalizedOptions.patternSerializer)
+    }
+
     TestContext.getter(
       'client',
       function (this: TestContext) {
-        return new ApiClient(typeof options === 'string' ? options : options?.baseURL, this.assert)
+        return new ApiClient(normalizedOptions?.baseURL, this.assert)
       },
       true
     )
