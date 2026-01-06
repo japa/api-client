@@ -33,7 +33,7 @@ const DUMP_CALLS = {
   headers: dumpRequestHeaders,
 }
 
-export class ApiRequest extends Macroable {
+export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macroable {
   /**
    * The serializer to use for serializing request query params
    */
@@ -169,7 +169,7 @@ export class ApiRequest extends Macroable {
    * Send HTTP request to the server. Errors except the client errors
    * are tured into a response object.
    */
-  async #sendRequest() {
+  async #sendRequest(): Promise<ApiResponse<TResponse>> {
     let response: Response
 
     try {
@@ -195,7 +195,7 @@ export class ApiRequest extends Macroable {
     }
 
     await this.#setupRunner.cleanup(null, this)
-    return new ApiResponse(this, response, this.config, this.#assert)
+    return new ApiResponse<TResponse>(this, response, this.config, this.#assert)
   }
 
   /**
@@ -359,7 +359,17 @@ export class ApiRequest extends Macroable {
    *   password: 'secret'
    * })
    */
-  form(values: string | object) {
+  form(values: TBody) {
+    this.type('form')
+    this.request.send(values as string | object)
+    return this
+  }
+
+  /**
+   * Set form values without type checking.
+   * Useful for testing invalid form data.
+   */
+  unsafeForm(values: string | object) {
     this.type('form')
     this.request.send(values)
     return this
@@ -375,7 +385,17 @@ export class ApiRequest extends Macroable {
    *   password: 'secret'
    * })
    */
-  json(values: string | object) {
+  json(values: TBody) {
+    this.type('json')
+    this.request.send(values as string | object)
+    return this
+  }
+
+  /**
+   * Set JSON body for the request without type checking.
+   * Useful for testing invalid JSON payloads.
+   */
+  unsafeJson(values: string | object) {
     this.type('json')
     this.request.send(values)
     return this
@@ -389,8 +409,23 @@ export class ApiRequest extends Macroable {
    * request.qs({ order_by: 'id' })
    */
   qs(key: string, value: any): this
-  qs(values: string | object): this
-  qs(key: string | object, value?: any): this {
+  qs(values: TQuery): this
+  qs(key: string | TQuery, value?: any): this {
+    if (!value) {
+      this.request.query(typeof key === 'string' ? key : ApiRequest.qsSerializer(key as object))
+    } else {
+      this.request.query(ApiRequest.qsSerializer({ [key as string]: value }))
+    }
+    return this
+  }
+
+  /**
+   * Set querystring for the request without type checking.
+   * Useful for testing invalid query parameters.
+   */
+  unsafeQs(key: string, value: any): this
+  unsafeQs(values: string | object): this
+  unsafeQs(key: string | object, value?: any): this {
     if (!value) {
       this.request.query(typeof key === 'string' ? key : ApiRequest.qsSerializer(key))
     } else {
@@ -580,10 +615,16 @@ export class ApiRequest extends Macroable {
    * - 'ENETUNREACH'
    * - 'EAI_AGAIN'
    */
-  retry(count: number, retryUntilCallback?: (error: any, response: ApiResponse) => boolean): this {
+  retry(
+    count: number,
+    retryUntilCallback?: (error: any, response: ApiResponse<TResponse>) => boolean
+  ): this {
     if (retryUntilCallback) {
       this.request.retry(count, (error, response) => {
-        return retryUntilCallback(error, new ApiResponse(this, response, this.config, this.#assert))
+        return retryUntilCallback(
+          error,
+          new ApiResponse<TResponse>(this, response, this.config, this.#assert)
+        )
       })
 
       return this
@@ -596,7 +637,7 @@ export class ApiRequest extends Macroable {
   /**
    * Make the API request
    */
-  async send() {
+  async send(): Promise<ApiResponse<TResponse>> {
     /**
      * Step 1: Instantiate hooks runners
      */
@@ -623,8 +664,11 @@ export class ApiRequest extends Macroable {
   /**
    * Implementation of `then` for the promise API
    */
-  then<TResult1 = ApiResponse, TResult2 = never>(
-    resolve?: ((value: ApiResponse) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+  then<TResult1 = ApiResponse<TResponse>, TResult2 = never>(
+    resolve?:
+      | ((value: ApiResponse<TResponse>) => TResult1 | PromiseLike<TResult1>)
+      | undefined
+      | null,
     reject?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null
   ): Promise<TResult1 | TResult2> {
     return this.send().then(resolve, reject)
@@ -634,15 +678,15 @@ export class ApiRequest extends Macroable {
    * Implementation of `catch` for the promise API
    */
   catch<TResult = never>(
-    reject?: ((reason: ApiResponse) => TResult | PromiseLike<TResult>) | undefined | null
-  ): Promise<ApiResponse | TResult> {
+    reject?: ((reason: ApiResponse<TResponse>) => TResult | PromiseLike<TResult>) | undefined | null
+  ): Promise<ApiResponse<TResponse> | TResult> {
     return this.send().catch(reject)
   }
 
   /**
    * Implementation of `finally` for the promise API
    */
-  finally(fullfilled?: (() => void) | undefined | null): Promise<ApiResponse> {
+  finally(fullfilled?: (() => void) | undefined | null): Promise<ApiResponse<TResponse>> {
     return this.send().finally(fullfilled)
   }
 
