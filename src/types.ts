@@ -175,15 +175,13 @@ export interface RouteDefinition {
   }
 }
 
-/**
- * Runtime routes registry passed to the plugin
- */
-export type RoutesRegistry = Record<string, { methods: readonly string[]; pattern: string }>
-
-/**
- * Pattern serializer function type
- */
-export type PatternSerializer = (pattern: string, params: Record<string, any>) => string
+export type RouteBuilder = (
+  name: string,
+  params?: any[] | Record<string, any>
+) => {
+  url: string
+  method: string
+}
 
 /**
  * Check if an object type is empty (has no keys)
@@ -263,6 +261,4 @@ export type ValidPattern = HasUserRegistry extends true ? AllPatterns : string
  */
 export interface ApiClientPluginOptions {
   baseURL?: string
-  registry?: RoutesRegistry
-  patternSerializer?: PatternSerializer
 }

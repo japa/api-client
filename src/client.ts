@@ -18,14 +18,13 @@ import {
   type InferBody,
   type InferResponse,
   type InferQuery,
-  type RoutesRegistry,
-  type PatternSerializer,
   type UserRoutesRegistry,
   type InferRouteBody,
   type InferRouteQuery,
   type InferRouteResponse,
   type InferRouteParams,
   type IsEmptyObject,
+  type RouteBuilder,
 } from './types.js'
 
 /**
@@ -49,19 +48,8 @@ export class ApiClient extends Macroable {
     teardown: [],
   }
 
+  static #routerBuilder?: RouteBuilder
   static #customCookiesSerializer?: CookiesSerializer
-
-  /**
-   * Routes registry for type-safe named routes
-   */
-  static #routesRegistry?: RoutesRegistry
-
-  /**
-   * Pattern serializer for converting patterns to URLs
-   */
-  static #patternSerializer: PatternSerializer = (pattern, params) => {
-    return pattern.replace(/:(\w+)/g, (_, key) => String(params[key] ?? ''))
-  }
 
   #baseUrl?: string
   #assert?: Assert
@@ -131,27 +119,13 @@ export class ApiClient extends Macroable {
     return this
   }
 
-  /**
-   * Register a routes registry for type-safe named routes
-   */
-  static setRoutes(registry: RoutesRegistry) {
-    this.#routesRegistry = registry
+  static setRouteBuilder(routerBuilder: RouteBuilder) {
+    this.#routerBuilder = routerBuilder
     return this
   }
 
-  /**
-   * Register a custom pattern serializer
-   */
-  static setPatternSerializer(serializer: PatternSerializer) {
-    this.#patternSerializer = serializer
-    return this
-  }
-
-  /**
-   * Clear the routes registry
-   */
-  static clearRoutes() {
-    this.#routesRegistry = undefined
+  static clearRouteBuilder() {
+    this.#routerBuilder = undefined
     return this
   }
 
@@ -268,23 +242,15 @@ export class ApiClient extends Macroable {
     const name = args[0]
     const params = (args[1] ?? {}) as Record<string, any>
 
-    const registry = (this.constructor as typeof ApiClient).#routesRegistry
-    if (!registry) {
+    const routerBuilder = (this.constructor as typeof ApiClient).#routerBuilder
+    if (!routerBuilder) {
       throw new Error(
-        `Routes registry not configured. Use ApiClient.routes() to register your routes.`
+        `Route builder not configured. Use ApiClient.setRouteBuilder() to configure a routes builder`
       )
     }
 
-    const routeDef = registry[name as string]
-    if (!routeDef) {
-      throw new Error(`Route "${String(name)}" not found in routes registry.`)
-    }
-
-    const serializer = (this.constructor as typeof ApiClient).#patternSerializer
-    const endpoint = serializer(routeDef.pattern, params)
-    const method = routeDef.methods[0]
-
-    return this.request(endpoint, method) as ApiRequest<
+    const routeDef = routerBuilder(name, params)
+    return this.request(routeDef.url, routeDef.method) as ApiRequest<
       InferRouteBody<Name>,
       InferRouteResponse<Name>,
       InferRouteQuery<Name>

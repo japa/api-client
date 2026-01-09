@@ -11,23 +11,34 @@ import { test } from '@japa/runner'
 
 import { ApiClient } from '../../src/client.js'
 import { httpServer } from '../../tests_helpers/index.js'
-import type { RoutesRegistry } from '../../src/types.js'
+import { type RouteBuilder } from '../../src/types.ts'
 
 /**
  * Test routes registry (runtime)
  */
-const testRoutes = {
+const testRoutes: Record<string, { methods: string[]; pattern: string }> = {
   'users.index': { methods: ['GET'], pattern: '/users' },
   'users.show': { methods: ['GET'], pattern: '/users/:id' },
   'users.create': { methods: ['POST'], pattern: '/users' },
   'users.update': { methods: ['PUT'], pattern: '/users/:id' },
   'posts.index': { methods: ['GET', 'HEAD'], pattern: '/posts' },
-} as const satisfies RoutesRegistry
+}
+
+const routeBuilder: RouteBuilder = (name, params) => {
+  const routeDef = testRoutes[name]
+  if (!routeDef) {
+    throw new Error(`Route "${name}" not found`)
+  }
+  return {
+    url: routeDef.pattern.replace(/:(\w+)/g, (_, key) => String((params as any)[key] ?? '')),
+    method: routeDef.methods[0],
+  }
+}
 
 /**
  * Type augmentation for tests
  */
-declare module '../../src/types.js' {
+declare module '../../src/types.ts' {
   interface UserRoutesRegistry {
     'users.index': {
       methods: ['GET']
@@ -89,7 +100,7 @@ test.group('API client | visit', (group) => {
   })
 
   group.each.setup(() => {
-    ApiClient.setRoutes(testRoutes)
+    ApiClient.setRouteBuilder(routeBuilder)
     return () => {
       ApiClient.clearRequestHandlers()
       ApiClient.clearSetupHooks()
@@ -184,16 +195,13 @@ test.group('API client | visit', (group) => {
     assert.equal(requestUrl!, '/users?page=2&limit=10')
   })
 
-  test('throw error when routes registry is not configured', async ({ assert }) => {
-    ApiClient.clearRoutes()
-
+  test('throw error when routes registry is not configured', async () => {
+    ApiClient.clearRouteBuilder()
     const client = new ApiClient(httpServer.baseUrl)
-
-    await assert.rejects(() => client.visit('users.index'), /Routes registry not configured/)
-
-    // Re-configure for subsequent tests
-    ApiClient.setRoutes(testRoutes)
-  })
+    client.visit('users.index')
+  }).throws(
+    'Route builder not configured. Use ApiClient.setRouteBuilder() to configure a routes builder'
+  )
 
   test('throw error when route is not found in registry', async ({ assert }) => {
     httpServer.onRequest((_, res) => res.end())
@@ -206,31 +214,6 @@ test.group('API client | visit', (group) => {
       /Route "non.existent" not found/
     )
   })
-
-  test('use custom pattern serializer', async ({ assert }) => {
-    let requestUrl: string
-
-    httpServer.onRequest((req, res) => {
-      requestUrl = req.url!
-      res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ user: { id: 1, name: 'John' } }))
-    })
-
-    // Custom serializer that uses {param} instead of :param
-    ApiClient.setPatternSerializer((pattern, params) => {
-      return pattern.replace(/:(\w+)/g, (_, key) => `[${params[key]}]`)
-    })
-
-    const client = new ApiClient(httpServer.baseUrl)
-    await client.visit('users.show', { id: '456' })
-
-    assert.equal(requestUrl!, '/users/[456]')
-
-    // Reset to default
-    ApiClient.setPatternSerializer((pattern, params) => {
-      return pattern.replace(/:(\w+)/g, (_, key) => String(params[key] ?? ''))
-    })
-  })
 })
 
 test.group('API client | unsafe methods', (group) => {
@@ -240,7 +223,7 @@ test.group('API client | unsafe methods', (group) => {
   })
 
   group.each.setup(() => {
-    ApiClient.setRoutes(testRoutes)
+    ApiClient.setRouteBuilder(routeBuilder)
     return () => {
       ApiClient.clearRequestHandlers()
       ApiClient.clearSetupHooks()
@@ -305,7 +288,7 @@ test.group('API client | unsafe methods', (group) => {
 
 test.group('API client | type safety', (group) => {
   group.each.setup(() => {
-    ApiClient.setRoutes(testRoutes)
+    ApiClient.setRouteBuilder(routeBuilder)
     return () => {
       ApiClient.clearRequestHandlers()
     }
