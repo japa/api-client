@@ -23,15 +23,6 @@ export { ApiResponse } from './src/response.js'
 export function apiClient(options?: string | ApiClientPluginOptions): PluginFn {
   return function () {
     const normalizedOptions = typeof options === 'string' ? { baseURL: options } : options
-
-    if (normalizedOptions?.registry) {
-      ApiClient.setRoutes(normalizedOptions.registry)
-    }
-
-    if (normalizedOptions?.patternSerializer) {
-      ApiClient.setPatternSerializer(normalizedOptions.patternSerializer)
-    }
-
     TestContext.getter(
       'client',
       function (this: TestContext) {

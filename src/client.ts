@@ -18,7 +18,7 @@ import {
   type InferBody,
   type InferResponse,
   type InferQuery,
-  type UserRoutesRegistry,
+  type RoutesRegistry,
   type InferRouteBody,
   type InferRouteQuery,
   type InferRouteResponse,
@@ -234,7 +234,7 @@ export class ApiClient extends Macroable {
    * The route name must be registered in both the runtime registry
    * (via ApiClient.setRoutes()) and the type registry (UserRoutesRegistry).
    */
-  visit<Name extends keyof UserRoutesRegistry>(
+  visit<Name extends keyof RoutesRegistry>(
     ...args: IsEmptyObject<InferRouteParams<Name>> extends true
       ? [name: Name]
       : [name: Name, params: InferRouteParams<Name>]

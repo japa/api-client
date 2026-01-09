@@ -159,7 +159,7 @@ export type ApiRequestHooks = {
  *   }
  * }
  */
-export interface UserRoutesRegistry {}
+export interface RoutesRegistry {}
 
 /**
  * Shape of a route definition in the registry
@@ -191,21 +191,19 @@ export type IsEmptyObject<T> = keyof T extends never ? true : false
 /**
  * Check if user has augmented the registry
  */
-type HasUserRegistry = keyof UserRoutesRegistry extends never ? false : true
+type HasUserRegistry = keyof RoutesRegistry extends never ? false : true
 
 /**
  * Find a route definition by its pattern
  */
 type FindRouteByPattern<P extends string> = {
-  [K in keyof UserRoutesRegistry]: UserRoutesRegistry[K] extends { pattern: P }
-    ? UserRoutesRegistry[K]
-    : never
-}[keyof UserRoutesRegistry]
+  [K in keyof RoutesRegistry]: RoutesRegistry[K] extends { pattern: P } ? RoutesRegistry[K] : never
+}[keyof RoutesRegistry]
 
 /**
  * Extract all patterns from the registry
  */
-type AllPatterns = UserRoutesRegistry[keyof UserRoutesRegistry] extends { pattern: infer P }
+type AllPatterns = RoutesRegistry[keyof RoutesRegistry] extends { pattern: infer P }
   ? P extends string
     ? P
     : never
@@ -215,9 +213,9 @@ type AllPatterns = UserRoutesRegistry[keyof UserRoutesRegistry] extends { patter
  * Helper to extract a type from a named route
  */
 type InferFromRoute<
-  Name extends keyof UserRoutesRegistry,
+  Name extends keyof RoutesRegistry,
   Key extends 'params' | 'query' | 'body' | 'response',
-> = UserRoutesRegistry[Name] extends { types: infer Types }
+> = RoutesRegistry[Name] extends { types: infer Types }
   ? Key extends keyof Types
     ? Types[Key]
     : never
@@ -239,13 +237,10 @@ type InferFromPattern<
       : any
   : any
 
-export type InferRouteParams<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'params'>
-export type InferRouteQuery<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'query'>
-export type InferRouteBody<Name extends keyof UserRoutesRegistry> = InferFromRoute<Name, 'body'>
-export type InferRouteResponse<Name extends keyof UserRoutesRegistry> = InferFromRoute<
-  Name,
-  'response'
->
+export type InferRouteParams<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'params'>
+export type InferRouteQuery<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'query'>
+export type InferRouteBody<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'body'>
+export type InferRouteResponse<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'response'>
 
 export type InferBody<P extends string> = InferFromPattern<P, 'body'>
 export type InferResponse<P extends string> = InferFromPattern<P, 'response'>

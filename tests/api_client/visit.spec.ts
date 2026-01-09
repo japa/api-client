@@ -39,7 +39,7 @@ const routeBuilder: RouteBuilder = (name, params) => {
  * Type augmentation for tests
  */
 declare module '../../src/types.ts' {
-  interface UserRoutesRegistry {
+  interface RoutesRegistry {
     'users.index': {
       methods: ['GET']
       pattern: '/users'
