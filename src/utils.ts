@@ -19,6 +19,8 @@ const INSPECT_OPTIONS = { colors: true, depth: 2, showHidden: false }
  *
  * It is an expirement to use server error stack and convert
  * it to an actual error object.
+ *
+ * @param errorStack - The error stack string or any value to process
  */
 export function stackToError(errorStack: any): string | Error {
   if (typeof errorStack === 'string' && /^\s*at .*(\S+:\d+|\(native\))/m.test(errorStack)) {
@@ -31,7 +33,13 @@ export function stackToError(errorStack: any): string | Error {
 }
 
 /**
- * Default implementation to print request errors
+ * Default implementation to print request errors.
+ * Attempts to convert error stack to an error object when status >= 500.
+ *
+ * @param response - The API response to dump errors from
+ *
+ * @example
+ * dumpResponseError(response)
  */
 export function dumpResponseError(response: ApiResponse) {
   /**
@@ -44,21 +52,39 @@ export function dumpResponseError(response: ApiResponse) {
 }
 
 /**
- * Default implementation to log request cookies
+ * Default implementation to log request cookies.
+ * Outputs the cookies jar to the console.
+ *
+ * @param request - The API request containing cookies to dump
+ *
+ * @example
+ * dumpRequestCookies(request)
  */
 export function dumpRequestCookies(request: ApiRequest) {
   console.log(`"cookies"  => ${inspect(request.cookiesJar, INSPECT_OPTIONS)}`)
 }
 
 /**
- * Default implementation to log response cookies
+ * Default implementation to log response cookies.
+ * Outputs the response cookies to the console.
+ *
+ * @param response - The API response containing cookies to dump
+ *
+ * @example
+ * dumpResponseCookies(response)
  */
 export function dumpResponseCookies(response: ApiResponse) {
   console.log(`"cookies"   => ${inspect(response.cookies(), INSPECT_OPTIONS)}`)
 }
 
 /**
- * Default implementation to log request headers
+ * Default implementation to log request headers.
+ * Outputs the request headers to the console.
+ *
+ * @param request - The API request containing headers to dump
+ *
+ * @example
+ * dumpRequestHeaders(request)
  */
 export function dumpRequestHeaders(request: ApiRequest) {
   // @ts-ignore
@@ -66,14 +92,26 @@ export function dumpRequestHeaders(request: ApiRequest) {
 }
 
 /**
- * Default implementation to log response headers
+ * Default implementation to log response headers.
+ * Outputs the response headers to the console.
+ *
+ * @param response - The API response containing headers to dump
+ *
+ * @example
+ * dumpResponseHeaders(response)
  */
 export function dumpResponseHeaders(response: ApiResponse) {
   console.log(`"headers"   => ${inspect(response.headers(), INSPECT_OPTIONS)}`)
 }
 
 /**
- * Default implementation to log request body
+ * Default implementation to log request body.
+ * Outputs the request body data to the console.
+ *
+ * @param request - The API request containing body to dump
+ *
+ * @example
+ * dumpRequestBody(request)
  */
 export function dumpRequestBody(request: ApiRequest) {
   // @ts-ignore
@@ -84,7 +122,14 @@ export function dumpRequestBody(request: ApiRequest) {
 }
 
 /**
- * Default implementation to log response body
+ * Default implementation to log response body.
+ * Outputs the response body, text, and files to the console.
+ * Skips body output for server errors (status >= 500).
+ *
+ * @param response - The API response containing body to dump
+ *
+ * @example
+ * dumpResponseBody(response)
  */
 export function dumpResponseBody(response: ApiResponse) {
   if (response.status() >= 500) {
@@ -110,7 +155,13 @@ export function dumpResponseBody(response: ApiResponse) {
 }
 
 /**
- * Default implementation to log request
+ * Default implementation to log request.
+ * Outputs the request method, endpoint, and query string to the console.
+ *
+ * @param request - The API request to dump
+ *
+ * @example
+ * dumpRequest(request)
  */
 export function dumpRequest(request: ApiRequest) {
   console.log(
@@ -129,7 +180,13 @@ export function dumpRequest(request: ApiRequest) {
 }
 
 /**
- * Default implementation to log response
+ * Default implementation to log response.
+ * Outputs the response status to the console.
+ *
+ * @param response - The API response to dump
+ *
+ * @example
+ * dumpResponse(response)
  */
 export function dumpResponse(response: ApiResponse) {
   console.log(

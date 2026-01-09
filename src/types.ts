@@ -15,8 +15,9 @@ import { type ApiRequest } from './request.js'
 import { type ApiResponse } from './response.js'
 
 /**
- * The interface is copied from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/formidable/PersistentFile.d.ts, since superagent using formidable for parsing response
- * files.
+ * Represents a file from a multipart response.
+ * The interface is copied from formidable's PersistentFile type, as superagent
+ * uses formidable for parsing response files.
  */
 export interface SuperAgentResponseFile extends EventEmitter {
   open(): void
@@ -56,83 +57,137 @@ export type SuperAgentSerializer = (obj: any) => string
 export type MultipartValue = Blob | Buffer | ReadStream | string | boolean | number
 
 /**
- * Shape of custom cookies serializer.
+ * Custom cookies serializer for processing request and response cookies.
  */
 export type CookiesSerializer = {
+  /**
+   * Process a cookie from the response
+   *
+   * @param key - The cookie name
+   * @param value - The cookie value
+   * @param response - The API response instance
+   */
   process(key: string, value: any, response: ApiResponse): any
+
+  /**
+   * Prepare a cookie for the request
+   *
+   * @param key - The cookie name
+   * @param value - The cookie value
+   * @param request - The API request instance
+   */
   prepare(key: string, value: any, request: ApiRequest): string
 }
 
 /**
- * Config accepted by the API request class
+ * Configuration accepted by the ApiRequest class.
  */
 export type RequestConfig = {
+  /** The HTTP method */
   method: string
+
+  /** The endpoint or URL path */
   endpoint: string
+
+  /** Optional base URL to prepend to the endpoint */
   baseUrl?: string
+
+  /** Lifecycle hooks for the request */
   hooks?: {
     setup: SetupHandler[]
     teardown: TeardownHandler[]
   }
+
+  /** Custom serializers */
   serializers?: {
     cookie?: CookiesSerializer
   }
 }
 
 /**
- * Shape of the parsed response cookie
+ * Represents a parsed cookie from an HTTP response.
  */
 export type ResponseCookie = {
+  /** The cookie name */
   name: string
+
+  /** The cookie value */
   value: any
+
+  /** The cookie path */
   path?: string
+
+  /** The cookie domain */
   domain?: string
+
+  /** The cookie expiration date */
   expires?: Date
+
+  /** The cookie max age in seconds */
   maxAge?: number
+
+  /** Whether the cookie is secure (HTTPS only) */
   secure?: boolean
+
+  /** Whether the cookie is HTTP only (not accessible via JavaScript) */
   httpOnly?: boolean
+
+  /** The cookie SameSite attribute */
   sameSite?: string
 }
 
 /**
- * Response cookies jar
+ * A collection of response cookies indexed by name.
  */
 export type ResponseCookies = Record<string, ResponseCookie>
 
 /**
- * Shape of the cookie accepted by the request
+ * Represents a cookie to be sent with a request.
  */
 export type RequestCookie = {
+  /** The cookie name */
   name: string
+
+  /** The cookie value */
   value: any
 }
 
 /**
- * Request cookies jar
+ * A collection of request cookies indexed by name.
  */
 export type RequestCookies = Record<string, RequestCookie>
 
 /**
- * Setup handlers
+ * Cleanup handler for setup hooks, called after the setup hook completes or errors.
  */
 export type SetupCleanupHandler = (error: any | null, request: ApiRequest) => any | Promise<any>
+
+/**
+ * Setup handler called before making an HTTP request.
+ * Can optionally return a cleanup handler.
+ */
 export type SetupHandler = (
   request: ApiRequest
 ) => any | SetupCleanupHandler | Promise<any> | Promise<SetupCleanupHandler>
 
 /**
- * Teardown handlers
+ * Cleanup handler for teardown hooks, called after the teardown hook completes or errors.
  */
 export type TeardownCleanupHandler = (
   error: any | null,
   response: ApiResponse
 ) => any | Promise<any>
+
+/**
+ * Teardown handler called after receiving an HTTP response.
+ * Can optionally return a cleanup handler.
+ */
 export type TeardownHandler = (
   response: ApiResponse
 ) => any | TeardownCleanupHandler | Promise<any> | Promise<TeardownCleanupHandler>
 
 /**
- * Hooks type
+ * Lifecycle hooks configuration for API requests.
  */
 export type ApiRequestHooks = {
   setup: [Parameters<SetupHandler>, Parameters<SetupCleanupHandler>]
@@ -162,24 +217,42 @@ export type ApiRequestHooks = {
 export interface RoutesRegistry {}
 
 /**
- * Shape of a route definition in the registry
+ * Defines the structure of a route in the routes registry.
  */
 export interface RouteDefinition {
+  /** Allowed HTTP methods for this route */
   methods: readonly string[]
+
+  /** The URL pattern for this route */
   pattern: string
+
+  /** Type definitions for the route */
   types: {
+    /** Route parameter types */
     params: Record<string, any>
+
+    /** Query string parameter types */
     query: Record<string, any>
+
+    /** Request body type */
     body: Record<string, any>
+
+    /** Response body type */
     response: any
   }
 }
 
+/**
+ * Function that builds a route URL and method from a route name and parameters.
+ */
 export type RouteBuilder = (
   name: string,
   params?: any[] | Record<string, any>
 ) => {
+  /** The built URL */
   url: string
+
+  /** The HTTP method */
   method: string
 }
 
@@ -238,12 +311,35 @@ type InferFromPattern<
   : any
 
 export type InferRouteParams<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'params'>
+
+/**
+ * Infer the query type from a named route.
+ */
 export type InferRouteQuery<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'query'>
+
+/**
+ * Infer the body type from a named route.
+ */
 export type InferRouteBody<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'body'>
+
+/**
+ * Infer the response type from a named route.
+ */
 export type InferRouteResponse<Name extends keyof RoutesRegistry> = InferFromRoute<Name, 'response'>
 
+/**
+ * Infer the body type from a route pattern.
+ */
 export type InferBody<P extends string> = InferFromPattern<P, 'body'>
+
+/**
+ * Infer the response type from a route pattern.
+ */
 export type InferResponse<P extends string> = InferFromPattern<P, 'response'>
+
+/**
+ * Infer the query type from a route pattern.
+ */
 export type InferQuery<P extends string> = InferFromPattern<P, 'query'>
 
 /**
@@ -252,8 +348,13 @@ export type InferQuery<P extends string> = InferFromPattern<P, 'query'>
 export type ValidPattern = HasUserRegistry extends true ? AllPatterns : string
 
 /**
- * Options for the apiClient plugin
+ * Configuration options for the apiClient plugin.
  */
 export interface ApiClientPluginOptions {
+  /** The base URL for all requests */
   baseURL?: string
 }
+
+/**
+ * Infer the params type from a named route.
+ */

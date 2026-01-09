@@ -28,8 +28,12 @@ import {
 } from './types.js'
 
 /**
- * ApiClient exposes the API to make HTTP requests in context of
- * testing.
+ * ApiClient provides a fluent interface for making HTTP requests in the context of testing.
+ * It supports type-safe routing, custom serializers, and global hooks.
+ *
+ * @example
+ * const client = new ApiClient('http://localhost:3000')
+ * const response = await client.get('/users').send()
  */
 export class ApiClient extends Macroable {
   /**
@@ -62,7 +66,7 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Remove all globally registered setup hooks
+   * Remove all globally registered setup hooks.
    */
   static clearSetupHooks() {
     this.#hooksHandlers.setup = []
@@ -70,7 +74,7 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Remove all globally registered teardown hooks
+   * Remove all globally registered teardown hooks.
    */
   static clearTeardownHooks() {
     this.#hooksHandlers.teardown = []
@@ -78,8 +82,7 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Clear on request handlers registered using "onRequest"
-   * method
+   * Clear all request handlers registered using the `onRequest` method.
    */
   static clearRequestHandlers() {
     this.#onRequestHandlers = []
@@ -87,8 +90,14 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Register a handler to be invoked everytime a new request
-   * instance is created
+   * Register a handler to be invoked every time a new request instance is created.
+   *
+   * @param handler - The callback to invoke with the request instance
+   *
+   * @example
+   * ApiClient.onRequest((request) => {
+   *   request.header('X-Custom', 'value')
+   * })
    */
   static onRequest(handler: (request: ApiRequest) => void) {
     this.#onRequestHandlers.push(handler)
@@ -96,7 +105,14 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Register setup hooks. Setup hooks are called before the request
+   * Register a global setup hook that runs before every request.
+   *
+   * @param handler - The setup handler function
+   *
+   * @example
+   * ApiClient.setup((request) => {
+   *   request.header('Authorization', 'Bearer token')
+   * })
    */
   static setup(handler: SetupHandler) {
     this.#hooksHandlers.setup.push(handler)
@@ -104,7 +120,14 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Register teardown hooks. Teardown hooks are called before the request
+   * Register a global teardown hook that runs after every request.
+   *
+   * @param handler - The teardown handler function
+   *
+   * @example
+   * ApiClient.teardown((response) => {
+   *   console.log('Response status:', response.status())
+   * })
    */
   static teardown(handler: TeardownHandler) {
     this.#hooksHandlers.teardown.push(handler)
@@ -112,25 +135,52 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Register a custom cookies serializer
+   * Register a custom cookies serializer for processing request and response cookies.
+   *
+   * @param serailizer - The cookies serializer implementation
+   *
+   * @example
+   * ApiClient.cookiesSerializer({
+   *   prepare: (key, value) => encrypt(value),
+   *   process: (key, value) => decrypt(value)
+   * })
    */
   static cookiesSerializer(serailizer: CookiesSerializer) {
     this.#customCookiesSerializer = serailizer
     return this
   }
 
+  /**
+   * Set a route builder for type-safe routing with named routes.
+   *
+   * @param routerBuilder - The route builder function
+   *
+   * @example
+   * ApiClient.setRouteBuilder((name, params) => {
+   *   return routes.make(name, params)
+   * })
+   */
   static setRouteBuilder(routerBuilder: RouteBuilder) {
     this.#routerBuilder = routerBuilder
     return this
   }
 
+  /**
+   * Clear the configured route builder.
+   */
   static clearRouteBuilder() {
     this.#routerBuilder = undefined
     return this
   }
 
   /**
-   * Create an instance of the request
+   * Create a new HTTP request instance for the given endpoint and method.
+   *
+   * @param endpoint - The endpoint or URL path
+   * @param method - The HTTP method
+   *
+   * @example
+   * const request = client.request('/users', 'GET')
    */
   request(endpoint: string, method: string) {
     const hooks = (this.constructor as typeof ApiClient).#hooksHandlers
@@ -165,14 +215,24 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Create an instance of the request for GET method
+   * Create a new GET request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.get('/users').send()
    */
   get<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'GET') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
   }
 
   /**
-   * Create an instance of the request for POST method
+   * Create a new POST request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.post('/users').json({ name: 'John' }).send()
    */
   post<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'POST') as ApiRequest<
@@ -183,7 +243,12 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Create an instance of the request for PUT method
+   * Create a new PUT request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.put('/users/1').json({ name: 'John' }).send()
    */
   put<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'PUT') as ApiRequest<
@@ -194,7 +259,12 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Create an instance of the request for PATCH method
+   * Create a new PATCH request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.patch('/users/1').json({ name: 'Jane' }).send()
    */
   patch<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'PATCH') as ApiRequest<
@@ -205,7 +275,12 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Create an instance of the request for DELETE method
+   * Create a new DELETE request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.delete('/users/1').send()
    */
   delete<P extends string>(endpoint: P): ApiRequest<InferBody<P>, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'DELETE') as ApiRequest<
@@ -216,14 +291,24 @@ export class ApiClient extends Macroable {
   }
 
   /**
-   * Create an instance of the request for HEAD method
+   * Create a new HEAD request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.head('/users').send()
    */
   head<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'HEAD') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
   }
 
   /**
-   * Create an instance of the request for OPTIONS method
+   * Create a new OPTIONS request for the given endpoint.
+   *
+   * @param endpoint - The endpoint or URL path
+   *
+   * @example
+   * const response = await client.options('/users').send()
    */
   options<P extends string>(endpoint: P): ApiRequest<never, InferResponse<P>, InferQuery<P>> {
     return this.request(endpoint, 'OPTIONS') as ApiRequest<never, InferResponse<P>, InferQuery<P>>
@@ -231,8 +316,12 @@ export class ApiClient extends Macroable {
 
   /**
    * Create a type-safe request using a named route from the registry.
-   * The route name must be registered in both the runtime registry
-   * (via ApiClient.setRoutes()) and the type registry (UserRoutesRegistry).
+   * The route name must be registered via `ApiClient.setRouteBuilder()`.
+   *
+   * @param args - The route name and optional parameters
+   *
+   * @example
+   * const response = await client.visit('users.show', { id: '1' }).send()
    */
   visit<Name extends keyof RoutesRegistry>(
     ...args: IsEmptyObject<InferRouteParams<Name>> extends true

@@ -29,11 +29,21 @@ import {
   dumpResponseHeaders,
 } from './utils.js'
 
+/**
+ * ApiResponse represents an HTTP response in the context of API testing.
+ * It extends Macroable to allow adding custom methods at runtime.
+ * The class provides methods for accessing response data and making assertions.
+ *
+ * @example
+ * const response = await request.send()
+ * response.assertStatus(200)
+ * console.log(response.body())
+ */
 export class ApiResponse<TResponse = any> extends Macroable {
   #valuesDumped: Set<string> = new Set()
 
   /**
-   * Parsed cookies
+   * Parsed cookies from the response
    */
   cookiesJar: ResponseCookies
 
@@ -105,15 +115,21 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Response content-type charset. Undefined if no charset
-   * is mentioned.
+   * Get the response content-type charset.
+   *
+   * @example
+   * response.charset() // 'utf-8'
    */
   charset(): string | undefined {
     return this.response.charset
   }
 
   /**
-   * Parsed files from the multipart response.
+   * Get parsed files from the multipart response.
+   *
+   * @example
+   * const files = response.files()
+   * console.log(files.avatar)
    */
   files<Properties extends string>(): { [K in Properties]: SuperAgentResponseFile } {
     return this.response.files
@@ -123,11 +139,11 @@ export class ApiResponse<TResponse = any> extends Macroable {
    * Returns an object of links by parsing the "Link" header.
    *
    * @example
-   * Link: <https://one.example.com>; rel="preconnect", <https://two.example.com>; rel="preload"
+   * // Link: <https://one.example.com>; rel="preconnect", <https://two.example.com>; rel="preload"
    * response.links()
    * // {
    * //   preconnect: 'https://one.example.com',
-     //   preload: 'https://two.example.com',
+   * //   preload: 'https://two.example.com',
    * // }
    */
   links(): Record<string, string> {
@@ -135,28 +151,42 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Response status type
+   * Get the response status type (1xx, 2xx, 3xx, 4xx, 5xx).
+   *
+   * @example
+   * response.statusType() // 2
    */
   statusType(): number {
     return this.response.statusType
   }
 
   /**
-   * Request raw parsed text
+   * Get the response raw parsed text.
+   *
+   * @example
+   * const text = response.text()
    */
   text(): string {
     return this.response.text
   }
 
   /**
-   * Response body
+   * Get the response body (parsed JSON, form data, or buffer).
+   *
+   * @example
+   * const body = response.body()
    */
   body(): TResponse {
     return this.response.body
   }
 
   /**
-   * Read value for a given response header
+   * Get the value for a given response header.
+   *
+   * @param key - The header name (case-insensitive)
+   *
+   * @example
+   * const contentType = response.header('content-type')
    */
   header(key: string): string | undefined {
     key = key.toLowerCase()
@@ -164,44 +194,55 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Get all response headers
+   * Get all response headers as an object.
+   *
+   * @example
+   * const headers = response.headers()
    */
   headers(): Record<string, string> {
     return this.response.headers
   }
 
   /**
-   * Get response status
+   * Get the response HTTP status code.
+   *
+   * @example
+   * response.status() // 200
    */
   status(): number {
     return this.response.status
   }
 
   /**
-   * Get response content-type
+   * Get the response content-type.
+   *
+   * @example
+   * response.type() // 'application/json'
    */
   type() {
     return this.response.type
   }
 
   /**
-   * Get redirects URLs the request has followed before
-   * getting the response
+   * Get redirect URLs the request has followed before
+   * receiving the response.
+   *
+   * @example
+   * const redirects = response.redirects()
    */
   redirects() {
     return this.response.redirects
   }
 
   /**
-   * Find if the response has parsed body. The check is performed
-   * by inspecting the response content-type and returns true
-   * when content-type is either one of the following.
+   * Check if the response has a parsed body. Returns true when
+   * content-type is one of: application/json, application/x-www-form-urlencoded,
+   * multipart/form-data, or when the response body is a buffer.
    *
-   * - application/json
-   * - application/x-www-form-urlencoded
-   * - multipart/form-data
-   *
-   * Or when the response body is a buffer.
+   * @example
+   * if (response.hasBody()) {
+   *   console.log(response.body())
+   * }
    */
   hasBody(): boolean {
     return (
@@ -213,64 +254,99 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Find if the response body has files
+   * Check if the response body contains files.
+   *
+   * @example
+   * if (response.hasFiles()) {
+   *   console.log(response.files())
+   * }
    */
   hasFiles(): boolean {
     return this.files() && Object.keys(this.files()).length > 0
   }
 
   /**
-   * Find if response is an error
+   * Check if the response is an error.
+   *
+   * @example
+   * if (response.hasError()) {
+   *   console.error(response.error())
+   * }
    */
   hasError(): boolean {
     return this.error() ? true : false
   }
 
   /**
-   * Find if response is an fatal error. Response with >=500
-   * status code are concerned as fatal errors
+   * Check if the response is a fatal error (status >= 500).
+   *
+   * @example
+   * if (response.hasFatalError()) {
+   *   console.error('Server error')
+   * }
    */
   hasFatalError(): boolean {
     return this.status() >= 500
   }
 
   /**
-   * Find if the request client failed to make the request
+   * Check if the request client failed to make the request.
+   *
+   * @example
+   * if (response.hasClientError()) {
+   *   console.error('Client error')
+   * }
    */
   hasClientError(): boolean {
     return this.response.clientError
   }
 
   /**
-   * Find if the server responded with an error
+   * Check if the server responded with an error.
+   *
+   * @example
+   * if (response.hasServerError()) {
+   *   console.error('Server error')
+   * }
    */
   hasServerError(): boolean {
     return this.response.serverError
   }
 
   /**
-   * Access to response error
+   * Get the response error object, or false if no error.
+   *
+   * @example
+   * const error = response.error()
    */
   error(): false | HTTPError {
     return this.response.error
   }
 
   /**
-   * Get cookie by name
+   * Get a cookie by name from the response.
+   *
+   * @param name - The cookie name
+   *
+   * @example
+   * const sessionCookie = response.cookie('session_id')
    */
   cookie(name: string): ResponseCookie | undefined {
     return this.cookiesJar[name]
   }
 
   /**
-   * Parsed response cookies
+   * Get all parsed response cookies.
+   *
+   * @example
+   * const cookies = response.cookies()
    */
   cookies() {
     return this.cookiesJar
   }
 
   /**
-   * Dump request headers
+   * Dump response headers to the console.
    */
   dumpHeaders(): this {
     if (this.#valuesDumped.has('headers')) {
@@ -283,7 +359,7 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Dump request cookies
+   * Dump response cookies to the console.
    */
   dumpCookies(): this {
     if (this.#valuesDumped.has('cookies')) {
@@ -296,7 +372,7 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Dump request body
+   * Dump response body to the console.
    */
   dumpBody(): this {
     if (this.#valuesDumped.has('body')) {
@@ -309,7 +385,7 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Dump request body
+   * Dump response error to the console.
    */
   dumpError(): this {
     if (this.#valuesDumped.has('error')) {
@@ -322,7 +398,7 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Dump request
+   * Dump response details (status, headers, cookies, body, errors) to the console.
    */
   dump(): this {
     if (this.#valuesDumped.has('response')) {
@@ -339,7 +415,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response status to match the expected status
+   * Assert response status to match the expected status.
+   *
+   * @param expectedStatus - The expected HTTP status code
+   *
+   * @example
+   * response.assertStatus(200)
    */
   assertStatus(expectedStatus: number) {
     this.#ensureHasAssert()
@@ -347,7 +428,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response body to match the expected body
+   * Assert response body to match the expected body.
+   *
+   * @param expectedBody - The expected response body
+   *
+   * @example
+   * response.assertBody({ id: 1, name: 'John' })
    */
   assertBody(expectedBody: TResponse) {
     this.#ensureHasAssert()
@@ -355,8 +441,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response body to match the subset from the
-   * expected body
+   * Assert response body contains a subset of the expected body.
+   *
+   * @param expectedBody - The expected body subset
+   *
+   * @example
+   * response.assertBodyContains({ name: 'John' })
    */
   assertBodyContains(expectedBody: any) {
     this.#ensureHasAssert()
@@ -364,8 +454,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response body not to match the subset from the
-   * expected body
+   * Assert response body does not contain a subset of the expected body.
+   *
+   * @param expectedBody - The body subset that should not be present
+   *
+   * @example
+   * response.assertBodyNotContains({ password: 'secret' })
    */
   assertBodyNotContains(expectedBody: any) {
     this.#ensureHasAssert()
@@ -373,8 +467,15 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response to contain a given cookie and optionally
-   * has the expected value
+   * Assert response contains a given cookie and optionally
+   * has the expected value.
+   *
+   * @param name - The cookie name
+   * @param value - Optional expected cookie value
+   *
+   * @example
+   * response.assertCookie('session_id')
+   * response.assertCookie('session_id', 'abc123')
    */
   assertCookie(name: string, value?: any) {
     this.#ensureHasAssert()
@@ -386,7 +487,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response to not contain a given cookie
+   * Assert response does not contain a given cookie.
+   *
+   * @param name - The cookie name
+   *
+   * @example
+   * response.assertCookieMissing('old_session')
    */
   assertCookieMissing(name: string) {
     this.#ensureHasAssert()
@@ -394,8 +500,15 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response to contain a given header and optionally
-   * has the expected value
+   * Assert response contains a given header and optionally
+   * has the expected value.
+   *
+   * @param name - The header name
+   * @param value - Optional expected header value
+   *
+   * @example
+   * response.assertHeader('content-type')
+   * response.assertHeader('content-type', 'application/json')
    */
   assertHeader(name: string, value?: any) {
     name = name.toLowerCase()
@@ -408,7 +521,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response to not contain a given header
+   * Assert response does not contain a given header.
+   *
+   * @param name - The header name
+   *
+   * @example
+   * response.assertHeaderMissing('x-deprecated-header')
    */
   assertHeaderMissing(name: string) {
     name = name.toLowerCase()
@@ -417,7 +535,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response text to include the expected value
+   * Assert response text includes the expected substring.
+   *
+   * @param expectedSubset - The expected substring
+   *
+   * @example
+   * response.assertTextIncludes('Welcome')
    */
   assertTextIncludes(expectedSubset: string) {
     this.#ensureHasAssert()
@@ -425,7 +548,11 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert response body is valid as per the API spec.
+   * Assert response body is valid as per the OpenAPI spec.
+   * Requires @japa/openapi-assertions plugin.
+   *
+   * @example
+   * response.assertAgainstApiSpec()
    */
   assertAgainstApiSpec() {
     this.#ensureHasOpenAPIAssertions()
@@ -433,7 +560,12 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert there is a matching redirect
+   * Assert the response redirected to a given pathname.
+   *
+   * @param pathname - The expected redirect pathname
+   *
+   * @example
+   * response.assertRedirectsTo('/dashboard')
    */
   assertRedirectsTo(pathname: string) {
     this.#ensureHasAssert()
@@ -451,182 +583,260 @@ export class ApiResponse<TResponse = any> extends Macroable {
   }
 
   /**
-   * Assert that response has an ok (200) status
+   * Assert that response has an ok (200) status.
+   *
+   * @example
+   * response.assertOk()
    */
   assertOk() {
     this.assertStatus(200)
   }
 
   /**
-   * Assert that response has a created (201) status
+   * Assert that response has a created (201) status.
+   *
+   * @example
+   * response.assertCreated()
    */
   assertCreated() {
     this.assertStatus(201)
   }
 
   /**
-   * Assert that response has an accepted (202) status
+   * Assert that response has an accepted (202) status.
+   *
+   * @example
+   * response.assertAccepted()
    */
   assertAccepted() {
     this.assertStatus(202)
   }
 
   /**
-   * Assert that response has a no content (204) status
+   * Assert that response has a no content (204) status.
+   *
+   * @example
+   * response.assertNoContent()
    */
   assertNoContent() {
     this.assertStatus(204)
   }
 
   /**
-   * Assert that response has a moved permanently (301) status
+   * Assert that response has a moved permanently (301) status.
+   *
+   * @example
+   * response.assertMovedPermanently()
    */
   assertMovedPermanently() {
     this.assertStatus(301)
   }
 
   /**
-   * Assert that response has a found (302) status
+   * Assert that response has a found (302) status.
+   *
+   * @example
+   * response.assertFound()
    */
   assertFound() {
     this.assertStatus(302)
   }
 
   /**
-   * Assert that response has a bad request (400) status
+   * Assert that response has a bad request (400) status.
+   *
+   * @example
+   * response.assertBadRequest()
    */
   assertBadRequest() {
     this.assertStatus(400)
   }
 
   /**
-   * Assert that response has an unauthorized (401) status
+   * Assert that response has an unauthorized (401) status.
+   *
+   * @example
+   * response.assertUnauthorized()
    */
   assertUnauthorized() {
     this.assertStatus(401)
   }
 
   /**
-   * Assert that response has a payment required (402) status
+   * Assert that response has a payment required (402) status.
+   *
+   * @example
+   * response.assertPaymentRequired()
    */
   assertPaymentRequired() {
     this.assertStatus(402)
   }
 
   /**
-   * Assert that response has a forbidden (403) status
+   * Assert that response has a forbidden (403) status.
+   *
+   * @example
+   * response.assertForbidden()
    */
   assertForbidden() {
     this.assertStatus(403)
   }
 
   /**
-   * Assert that response has a not found (404) status
+   * Assert that response has a not found (404) status.
+   *
+   * @example
+   * response.assertNotFound()
    */
   assertNotFound() {
     this.assertStatus(404)
   }
 
   /**
-   * Assert that response has a method not allowed (405) status
+   * Assert that response has a method not allowed (405) status.
+   *
+   * @example
+   * response.assertMethodNotAllowed()
    */
   assertMethodNotAllowed() {
     this.assertStatus(405)
   }
 
   /**
-   * Assert that response has a not acceptable (406) status
+   * Assert that response has a not acceptable (406) status.
+   *
+   * @example
+   * response.assertNotAcceptable()
    */
   assertNotAcceptable() {
     this.assertStatus(406)
   }
 
   /**
-   * Assert that response has a request timeout (408) status
+   * Assert that response has a request timeout (408) status.
+   *
+   * @example
+   * response.assertRequestTimeout()
    */
   assertRequestTimeout() {
     this.assertStatus(408)
   }
 
   /**
-   * Assert that response has a conflict (409) status
+   * Assert that response has a conflict (409) status.
+   *
+   * @example
+   * response.assertConflict()
    */
   assertConflict() {
     this.assertStatus(409)
   }
 
   /**
-   * Assert that response has a gone (410) status
+   * Assert that response has a gone (410) status.
+   *
+   * @example
+   * response.assertGone()
    */
   assertGone() {
     this.assertStatus(410)
   }
 
   /**
-   * Assert that response has a length required (411) status
+   * Assert that response has a length required (411) status.
+   *
+   * @example
+   * response.assertLengthRequired()
    */
   assertLengthRequired() {
     this.assertStatus(411)
   }
 
   /**
-   * Assert that response has a precondition failed (412) status
+   * Assert that response has a precondition failed (412) status.
+   *
+   * @example
+   * response.assertPreconditionFailed()
    */
   assertPreconditionFailed() {
     this.assertStatus(412)
   }
 
   /**
-   * Assert that response has a payload too large (413) status
+   * Assert that response has a payload too large (413) status.
+   *
+   * @example
+   * response.assertPayloadTooLarge()
    */
   assertPayloadTooLarge() {
     this.assertStatus(413)
   }
 
   /**
-   * Assert that response has a URI too long (414) status
+   * Assert that response has a URI too long (414) status.
+   *
+   * @example
+   * response.assertURITooLong()
    */
   assertURITooLong() {
     this.assertStatus(414)
   }
 
   /**
-   * Assert that response has an unsupported media type (415) status
+   * Assert that response has an unsupported media type (415) status.
+   *
+   * @example
+   * response.assertUnsupportedMediaType()
    */
   assertUnsupportedMediaType() {
     this.assertStatus(415)
   }
 
   /**
-   * Assert that response has a range not satisfiable (416) status
+   * Assert that response has a range not satisfiable (416) status.
+   *
+   * @example
+   * response.assertRangeNotSatisfiable()
    */
   assertRangeNotSatisfiable() {
     this.assertStatus(416)
   }
 
   /**
-   * Assert that response has an im a teapot (418) status
+   * Assert that response has an im a teapot (418) status.
+   *
+   * @example
+   * response.assertImATeapot()
    */
   assertImATeapot() {
     this.assertStatus(418)
   }
 
   /**
-   * Assert that response has an unprocessable entity (422) status
+   * Assert that response has an unprocessable entity (422) status.
+   *
+   * @example
+   * response.assertUnprocessableEntity()
    */
   assertUnprocessableEntity() {
     this.assertStatus(422)
   }
 
   /**
-   * Assert that response has a locked (423) status
+   * Assert that response has a locked (423) status.
+   *
+   * @example
+   * response.assertLocked()
    */
   assertLocked() {
     this.assertStatus(423)
   }
 
   /**
-   * Assert that response has a too many requests (429) status
+   * Assert that response has a too many requests (429) status.
+   *
+   * @example
+   * response.assertTooManyRequests()
    */
   assertTooManyRequests() {
     this.assertStatus(429)

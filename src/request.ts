@@ -33,6 +33,19 @@ const DUMP_CALLS = {
   headers: dumpRequestHeaders,
 }
 
+/**
+ * ApiRequest represents an HTTP request in the context of API testing.
+ * It extends Macroable to allow adding custom methods at runtime.
+ * The class provides a fluent interface for building and sending HTTP requests.
+ *
+ * @example
+ * const request = new ApiRequest({
+ *   method: 'GET',
+ *   endpoint: '/users',
+ *   baseUrl: 'http://localhost:3000'
+ * })
+ * await request.send()
+ */
 export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macroable {
   /**
    * The serializer to use for serializing request query params
@@ -40,34 +53,58 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   static qsSerializer: SuperAgentSerializer = (value) => value
 
   /**
-   * Register/remove custom superagent parser, Parsers are used
-   * to parse the incoming response
+   * Register a custom superagent parser. Parsers are used
+   * to parse the incoming response based on content type.
+   *
+   * @param contentType - The content type to register the parser for
+   * @param parser - The parser function to handle the response
    */
   static addParser = (contentType: string, parser: SuperAgentParser) => {
     superagent.parse[contentType] = parser
   }
+
+  /**
+   * Remove a custom superagent parser.
+   *
+   * @param contentType - The content type to remove the parser for
+   */
   static removeParser = (contentType: string) => {
     delete superagent.parse[contentType]
   }
 
   /**
-   * Register/remove custom superagent serializers. Serializers are used
-   * to serialize the request body
+   * Register a custom superagent serializer. Serializers are used
+   * to serialize the request body based on content type.
+   *
+   * @param contentType - The content type to register the serializer for
+   * @param serializer - The serializer function to handle the request body
    */
   static addSerializer = (contentType: string, serializer: SuperAgentSerializer) => {
     superagent.serialize[contentType] = serializer
   }
+
+  /**
+   * Remove a custom superagent serializer.
+   *
+   * @param contentType - The content type to remove the serializer for
+   */
   static removeSerializer = (contentType: string) => {
     delete superagent.serialize[contentType]
   }
 
   /**
    * Specify the serializer for query strings. Serializers are used to convert
-   * request querystring values to a string
+   * request querystring values to a string.
+   *
+   * @param serializer - The serializer function to convert query params
    */
   static setQsSerializer = (serializer: SuperAgentSerializer) => {
     ApiRequest.qsSerializer = serializer
   }
+
+  /**
+   * Remove the custom query string serializer and restore the default.
+   */
   static removeQsSerializer = () => {
     ApiRequest.qsSerializer = (value) => value
   }
@@ -247,7 +284,14 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
 
   /**
    * Register a setup hook. Setup hooks are called before
-   * making the request
+   * making the request.
+   *
+   * @param handler - The setup handler function to register
+   *
+   * @example
+   * request.setup((req) => {
+   *   req.header('Authorization', 'Bearer token')
+   * })
    */
   setup(handler: SetupHandler): this {
     this.hooks.add('setup', handler)
@@ -256,7 +300,14 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
 
   /**
    * Register a teardown hook. Teardown hooks are called after
-   * making the request
+   * making the request.
+   *
+   * @param handler - The teardown handler function to register
+   *
+   * @example
+   * request.teardown((response) => {
+   *   console.log('Request completed with status:', response.status())
+   * })
    */
   teardown(handler: TeardownHandler): this {
     this.hooks.add('teardown', handler)
@@ -264,7 +315,13 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set cookie as a key-value pair to be sent to the server
+   * Set cookie as a key-value pair to be sent to the server.
+   *
+   * @param key - The cookie name
+   * @param value - The cookie value
+   *
+   * @example
+   * request.cookie('session_id', 'abc123')
    */
   cookie(key: string, value: any): this {
     this.cookiesJar[key] = { name: key, value }
@@ -272,7 +329,15 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set cookies as an object to be sent to the server
+   * Set cookies as an object to be sent to the server.
+   *
+   * @param cookies - An object containing cookie key-value pairs
+   *
+   * @example
+   * request.cookies({
+   *   session_id: 'abc123',
+   *   user_token: 'xyz789'
+   * })
    */
   cookies(cookies: Record<string, any>): this {
     Object.keys(cookies).forEach((key) => this.cookie(key, cookies[key]))
@@ -309,6 +374,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
    * @note: This method makes a multipart request. See [[this.form]] to
    * make HTML style form submissions.
    *
+   * @param name - The field name
+   * @param value - The field value(s)
+   *
    * @example
    * request.field('name', 'virk')
    * request.field('age', 22)
@@ -319,10 +387,12 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Define fields as an object for a multipart request
+   * Define fields as an object for a multipart request.
    *
    * @note: This method makes a multipart request. See [[this.form]] to
    * make HTML style form submissions.
+   *
+   * @param values - An object containing field key-value pairs
    *
    * @example
    * request.fields({'name': 'virk', age: 22})
@@ -334,7 +404,11 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
 
   /**
    * Upload file for a multipart request. Either you can pass path to a
-   * file, a readable stream, or a buffer
+   * file, a readable stream, or a buffer.
+   *
+   * @param name - The field name for the file
+   * @param value - The file path, stream, or buffer
+   * @param options - Optional filename or configuration object
    *
    * @example
    * request.file('avatar', 'absolute/path/to/file')
@@ -353,6 +427,8 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
    * Set form values. Calling this method will set the content type
    * to "application/x-www-form-urlencoded".
    *
+   * @param values - The form data to send
+   *
    * @example
    * request.form({
    *   email: 'virk@adonisjs.com',
@@ -368,6 +444,8 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Set form values without type checking.
    * Useful for testing invalid form data.
+   *
+   * @param values - The form data to send (untyped)
    */
   unsafeForm(values: string | object) {
     this.type('form')
@@ -378,6 +456,8 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Set JSON body for the request. Calling this method will set
    * the content type to "application/json".
+   *
+   * @param values - The JSON data to send
    *
    * @example
    * request.json({
@@ -394,6 +474,8 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Set JSON body for the request without type checking.
    * Useful for testing invalid JSON payloads.
+   *
+   * @param values - The JSON data to send (untyped)
    */
   unsafeJson(values: string | object) {
     this.type('json')
@@ -403,6 +485,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
 
   /**
    * Set querystring for the request.
+   *
+   * @param key - The query parameter key or an object of query parameters
+   * @param value - The query parameter value (when key is a string)
    *
    * @example
    * request.qs('order_by', 'id')
@@ -422,6 +507,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Set querystring for the request without type checking.
    * Useful for testing invalid query parameters.
+   *
+   * @param key - The query parameter key or an object of query parameters
+   * @param value - The query parameter value (when key is a string)
    */
   unsafeQs(key: string, value: any): this
   unsafeQs(values: string | object): this
@@ -437,6 +525,8 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Set timeout for the request.
    *
+   * @param ms - Timeout in milliseconds or object with response/deadline timeouts
+   *
    * @example
    * request.timeout(5000)
    * request.timeout({ response: 5000, deadline: 60000 })
@@ -447,7 +537,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set content-type for the request
+   * Set content-type for the request.
+   *
+   * @param value - The content type
    *
    * @example
    * request.type('json')
@@ -458,7 +550,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set "accept" header in the request
+   * Set "accept" header in the request.
+   *
+   * @param type - The accept type
    *
    * @example
    * request.accept('json')
@@ -469,7 +563,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Follow redirects from the response
+   * Follow redirects from the response.
+   *
+   * @param count - Maximum number of redirects to follow
    *
    * @example
    * request.redirects(3)
@@ -480,7 +576,10 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set basic auth header from user and password
+   * Set basic auth header from user and password.
+   *
+   * @param user - The username
+   * @param password - The password
    *
    * @example
    * request.basicAuth('foo@bar.com', 'secret')
@@ -493,8 +592,10 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   /**
    * Pass auth bearer token as authorization header.
    *
+   * @param token - The bearer token
+   *
    * @example
-   * request.apiToken('tokenValue')
+   * request.bearerToken('tokenValue')
    */
   bearerToken(token: string): this {
     this.request.auth(token, { type: 'bearer' })
@@ -502,7 +603,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set the ca certificates to trust
+   * Set the CA certificates to trust.
+   *
+   * @param certificate - The certificate(s) to trust
    */
   ca(certificate: string | string[] | Buffer | Buffer[]): this {
     this.request.ca(certificate)
@@ -510,7 +613,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set the client certificates
+   * Set the client certificates.
+   *
+   * @param certificate - The client certificate(s)
    */
   cert(certificate: string | string[] | Buffer | Buffer[]): this {
     this.request.cert(certificate)
@@ -518,7 +623,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set the client private key(s)
+   * Set the client private key(s).
+   *
+   * @param key - The private key(s)
    */
   privateKey(key: string | string[] | Buffer | Buffer[]): this {
     this.request.key(key)
@@ -526,7 +633,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Set the client PFX or PKCS12 encoded private key and certificate chain
+   * Set the client PFX or PKCS12 encoded private key and certificate chain.
+   *
+   * @param key - The PFX/PKCS12 key(s) or object with pfx and passphrase
    */
   pfx(
     key: string | string[] | Buffer | Buffer[] | { pfx: string | Buffer; passphrase: string }
@@ -536,7 +645,7 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Does not reject expired or invalid TLS certs. Sets internally rejectUnauthorized=true
+   * Does not reject expired or invalid TLS certs. Sets internally rejectUnauthorized=true.
    */
   disableTLSCerts(): this {
     this.request.disableTLSCerts()
@@ -544,7 +653,9 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Trust broken HTTPs connections on localhost
+   * Trust broken HTTPs connections on localhost.
+   *
+   * @param trust - Whether to trust localhost connections (default: true)
    */
   trustLocalhost(trust = true): this {
     this.request.trustLocalhost(trust)
@@ -552,7 +663,7 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Dump request headers
+   * Dump request headers to the console when the request is sent.
    */
   dumpHeaders(): this {
     this.#valuesToDump.add('headers')
@@ -560,7 +671,7 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Dump request cookies
+   * Dump request cookies to the console when the request is sent.
    */
   dumpCookies(): this {
     this.#valuesToDump.add('cookies')
@@ -568,7 +679,7 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Dump request body
+   * Dump request body to the console when the request is sent.
    */
   dumpBody(): this {
     this.#valuesToDump.add('body')
@@ -576,7 +687,7 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Dump request
+   * Dump request details (headers, cookies, body) to the console when the request is sent.
    */
   dump(): this {
     this.#valuesToDump.add('request')
@@ -591,29 +702,20 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
    * a callback to decide how long the request should be retried.
    *
    * The max count is applied regardless of whether callback is defined
-   * or not
+   * or not.
    *
-   * The following response codes are considered failing.
-   * - 408
-   * - 413
-   * - 429
-   * - 500
-   * - 502
-   * - 503
-   * - 504
-   * - 521
-   * - 522
-   * - 524
+   * The following response codes are considered failing:
+   * - 408, 413, 429, 500, 502, 503, 504, 521, 522, 524
    *
-   * The following error codes are considered failing.
-   * - 'ETIMEDOUT'
-   * - 'ECONNRESET'
-   * - 'EADDRINUSE'
-   * - 'ECONNREFUSED'
-   * - 'EPIPE'
-   * - 'ENOTFOUND'
-   * - 'ENETUNREACH'
-   * - 'EAI_AGAIN'
+   * The following error codes are considered failing:
+   * - 'ETIMEDOUT', 'ECONNRESET', 'EADDRINUSE', 'ECONNREFUSED', 'EPIPE', 'ENOTFOUND', 'ENETUNREACH', 'EAI_AGAIN'
+   *
+   * @param count - Maximum number of retry attempts
+   * @param retryUntilCallback - Optional callback to determine if retry should continue
+   *
+   * @example
+   * request.retry(3)
+   * request.retry(5, (error, response) => response.status() >= 500)
    */
   retry(
     count: number,
@@ -635,7 +737,12 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Make the API request
+   * Make the API request and return the response.
+   * This method executes all setup hooks, sends the request,
+   * and runs all teardown hooks.
+   *
+   * @example
+   * const response = await request.send()
    */
   async send(): Promise<ApiResponse<TResponse>> {
     /**
@@ -662,7 +769,11 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Implementation of `then` for the promise API
+   * Implementation of `then` for the promise API.
+   * Allows ApiRequest to be used as a promise.
+   *
+   * @param resolve - The resolve callback
+   * @param reject - The reject callback
    */
   then<TResult1 = ApiResponse<TResponse>, TResult2 = never>(
     resolve?:
@@ -675,7 +786,10 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Implementation of `catch` for the promise API
+   * Implementation of `catch` for the promise API.
+   * Allows ApiRequest to be used as a promise.
+   *
+   * @param reject - The reject callback
    */
   catch<TResult = never>(
     reject?: ((reason: ApiResponse<TResponse>) => TResult | PromiseLike<TResult>) | undefined | null
@@ -684,7 +798,10 @@ export class ApiRequest<TBody = any, TResponse = any, TQuery = any> extends Macr
   }
 
   /**
-   * Implementation of `finally` for the promise API
+   * Implementation of `finally` for the promise API.
+   * Allows ApiRequest to be used as a promise.
+   *
+   * @param fullfilled - The callback to execute when the promise is settled
    */
   finally(fullfilled?: (() => void) | undefined | null): Promise<ApiResponse<TResponse>> {
     return this.send().finally(fullfilled)
